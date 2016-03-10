@@ -59,16 +59,19 @@ if [ $MOBILESIM_FOUND -eq 1 ]
 then
     echo "MobileSim 0.7.3 already installed!"
 fi
+# can also find via: $ whereis MobileSim
 
 WS4PY_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distribution('ws4py').version)" | grep -m 1 -o "0.3.5" | wc -l`
 # pkg_resources should give '0.3.5'
 # grep should find a match and repeat it
 # and wc -l should give 1 if ws4py 0.3.5 was found
-
 if [ $WS4PY_FOUND -eq 1 ]
 then
     echo "ws4py 0.3.5 already installed!"
 fi
+# longer test from within python:
+# >>> from ws4py.client.threadedclient import WebSocketClient
+# >>> testclient = WebSocketClient('ws://localhost:9090/')
 
 #
 # run installation + upgrades
@@ -136,35 +139,43 @@ sudo -u $SCRIPTUSER echo "source /opt/ros/indigo/setup.bash" >> /home/$SCRIPTUSE
 sudo -u $SCRIPTUSER echo "source /home/$SCRIPTUSER/catkin_ws/devel/setup.bash" >> /home/$SCRIPTUSER/.bashrc
 #sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/.bashrc
 
-# install ROSARIA
+# install ROSARIA (reference: http://wiki.ros.org/ROSARIA/Tutorials/How%20to%20use%20ROSARIA )
 cd /home/$SCRIPTUSER/catkin_ws/src
 # do NOT attempt to force rosaria if it's been installed previously! could cause serious issues (esp. with Aria and libaria!)
+# (Dependencies: genmsg -  if the make fails, Install package separately from here: https://github.com/ros/genmsg)
 if [ ! -d rosaria ]
 then
     sudo -u $SCRIPTUSER git clone https://github.com/amor-ros-pkg/rosaria.git
     cd rosaria
     # roll back to earlier version (/cmd_vel as pub-sub)
     sudo -u $SCRIPTUSER git checkout d58a244fc50bba568da57a828c9121c83a19284d
+    # this checkout downgrades to a version of rosaria that does not
+    # (a) require: chmod +x cfg/RosAria.cfg
+    # (b) require: pubtopic change from /RosAria/cmd_vel to /cmd_vel
     su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd /home/$SCRIPTUSER/catkin_ws; source devel/setup.bash; rosdep update; rosdep -y install rosaria; /opt/ros/indigo/bin/catkin_make;"
     # must run "rosdep update" and "rosdep install rosaria" as $SCRIPTUSER (non-root user)
     # sudo rosdep fix-permissions # if was root, would then need to run 'rosdep update' again without sudo
 fi
 
-# install deps for MobileSim and MobileSim
-mkdir -p ~/initdeps
-cd ~/initdeps
-sudo apt-get -y install lib32z1 lib32ncurses5 lib32bz2-1.0 xfonts-100dpi
-sudo apt-get -y install wget
-if [ "$FORCE" == "-f" ] || [ ! -f mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb ]
+# install deps for MobileSim and MobileSim (references: http://robots.mobilerobots.com/wiki/MobileSim and http://robots.mobilerobots.com/MobileSim/download/current/README.html )
+if [ $MOBILESIM_FOUND -eq 0 ]
 then
-    wget http://robots.mobilerobots.com/MobileSim/download/current/mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
-fi
-if [ "$FORCE" == "-f" ] || [ $MOBILESIM_FOUND -eq 0 ]
-then
-    sudo dpkg -i mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
+    mkdir -p ~/initdeps
+    cd ~/initdeps
+    # If you are running Ubuntu 14.04 64-bit, install these packages first to resolve dependencies, just in case (these are useful for Matlab fonts and such, too)
+    sudo apt-get -y install lib32z1 lib32ncurses5 lib32bz2-1.0 xfonts-100dpi
+    sudo apt-get -y install wget
+    if [ "$FORCE" == "-f" ] || [ ! -f mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb ]
+    then
+        wget http://robots.mobilerobots.com/MobileSim/download/current/mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
+    fi
+    if [ "$FORCE" == "-f" ] || [ $MOBILESIM_FOUND -eq 0 ]
+    then
+        sudo dpkg -i mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
+    fi
 fi
 
-# install python WebSocket library
+# install python WebSocket library (reference: https://ws4py.readthedocs.org/en/latest/sources/install/ )
 mkdir -p ~/initdeps/rosbridgeclient
 cd ~/initdeps/rosbridgeclient
 # if need to force, then remove old directory first
