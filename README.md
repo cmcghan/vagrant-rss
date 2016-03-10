@@ -28,36 +28,40 @@ It is recommended that you create and use the ROS indigo VagrantBox virtual mach
 For a ROS indigo Vagrantbox:
 ----------------------------
 
-The directory
-    ./vagrant-rss/Vagrant_ros-indigo
-is synced with
-    /vagrant
+The directory  
+    `./vagrant-rss/Vagrant_ros-indigo`  
+is synced with  
+    `/vagrant`  
 in the VM.
 
 The intended usage is:
+```
     git clone https://github.com/cmcghan/vagrant-rss.git
     cd vagrant-rss/Vagrant_ros-indigo
     vagrant box add shadowrobot/ros-indigo-desktop-trusty64
     vagrant up
     vagrant ssh
     cd ~/catkin_ws/src/rss_work
+```
 
 For a ROS jade Vagrantbox:
 --------------------------
 
 The directory  
-    ./vagrant-rss/Vagrant_ros-jade
+    `./vagrant-rss/Vagrant_ros-jade`  
 is synced with  
-    /vagrant  
+    `/vagrant`  
 in the VM.
 
 The intended usage is:
+```
     git clone https://github.com/cmcghan/vagrant-rss.git
     cd vagrant-rss/Vagrant_ros-jade
     vagrant box add ubuntu/trusty64
     vagrant up
     vagrant ssh
     cd ~/catkin_ws/src/rss_work
+```
 
 Contact
 =======
