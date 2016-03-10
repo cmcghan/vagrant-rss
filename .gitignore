@@ -1,0 +1,6 @@
+*.pyc
+*~
+.DS_Store
+*.bak
+Vagrant_ros-indigo/.vagrant/*
+Vagrant_ros-jade/.vagrant/*
