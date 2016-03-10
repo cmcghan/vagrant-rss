@@ -1,4 +1,7 @@
 #!/bin/bash -e
+# Copyright by California Institute of Technology
+# All rights reserved. See LICENSE file at:
+# https://github.com/cmcghan/vagrant-rss
 
 #
 # in the initialization process for vagrant, this bash script is run as user 'root' from /vagrant
