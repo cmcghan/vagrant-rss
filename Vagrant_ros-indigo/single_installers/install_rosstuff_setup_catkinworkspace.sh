@@ -97,6 +97,8 @@ then
     rm -rf /home/$SCRIPTUSER/catkin_ws/build
 fi
 
+sudo apt-get -y install wget curl # for wget and possible curl use below
+
 # install gnome-terminal for multiscript*.py runs
 sudo apt-get -y install gnome-terminal
 

@@ -76,6 +76,7 @@ cd ~/initdeps
 cd ~/initdeps
 
 # install tulip-control v1.1a system-wide
+sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo apt-get -y install default-jre default-jdk
 # if need to force, then remove old directory first
 if [ "$FORCE" == "-f" ]

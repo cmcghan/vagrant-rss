@@ -58,6 +58,7 @@ mkdir -p initdeps
 cd initdeps
 
 # install gr1c:
+sudo apt-get -y install curl # for curl use below
 sudo apt-get -y install python-numpy python-pyparsing python-scipy python-cvxopt python-networkx python-numpy-doc python-networkx-doc python-matplotlib python-matplotlib-data python-matplotlib-doc python-pydot graphviz graphviz-doc python-pygraphviz python-scitools
 sudo apt-get -y install python-dev build-essential python-pip ipython ipython-notebook python-pandas python-sympy python-nose libblas-dev liblapack-dev gfortran python-glpk glpk-utils libglpk-dev libglpk36 swig libgmp3-dev
 sudo apt-get -y install bison flex

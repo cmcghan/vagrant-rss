@@ -129,6 +129,7 @@ cd initdeps
 cd ~/initdeps
 
 # install OMPL libraries (cvxopt and glpk already installed above)
+sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo apt-get -y install software-properties-common # for add-apt-repository
 sudo add-apt-repository -y ppa:libccd-debs/ppa # libccd-dev requires ppa
 sudo apt-get update # update to include new ppa repo list(s)
@@ -155,25 +156,43 @@ fi
 cd omplapp-1.1.1-Source
 mkdir -p build/Release
 cd build/Release
+echo " "
 echo "Now performing: cmake ../.."
+echo " "
+echo "(1) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
+echo " "
+echo " "
 cmake ../..
 echo "Done with 'cmake ../..'."
 # installpyplusplus -->/usr/local/bin/gccxml_cc1plus
 # --> /usr/local/share/gccxml-0.9/*
 # --> /usr/local/bin/gccxml
 # --> /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info
-if [ $GCCXML_FOUND -eq 0 ] || [ $PYGCCXML_FOUND -eq 0 ] || [ $PYPLUSPLUS_FOUND -eq 0 ]
+if [ "$FORCE" == "-f" ] || [ $GCCXML_FOUND -eq 0 ] || [ $PYGCCXML_FOUND -eq 0 ] || [ $PYPLUSPLUS_FOUND -eq 0 ]
 then
+    echo " "
     echo "Now performing: make installpyplusplus && cmake ."
+    echo " "
+    echo "(2) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
+    echo " "
+    echo " "
     make installpyplusplus && cmake . # download & install Py++
     echo "Done with 'make installpyplusplus && cmake .'"
 else
     echo "gccxml, pygccxml, pyplusplus already installed. Skipping 'make installpyplusplus && cmake .' step."
 fi
 echo "Now performing: make update_bindings..."
+echo " "
+echo "(3) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
+echo " "
+echo " "
 make update_bindings # can have memory issues at this step(?!) or is it the next one(?) ("internal compiler error: Killed (program cc1plus)")
 echo "Done with 'make update_bindings'."
 echo "Now performing: make -j 2..."
+echo " "
+echo "(4) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
+echo " "
+echo " "
 make -j 2 # -j 4 is for 4 parallel jobs (e.g., 4 cores)
 echo "Done with 'make -j 2'."
 echo "Now performing: make test..."
