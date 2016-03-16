@@ -99,4 +99,8 @@ sudo pip install pulp
 # install python libraries for deliberative/psulu_picard (doxygen installed above)
 /vagrant/single_installers/install_ipopt.sh $FORCE
 
+# install python libraries for Michele Colledanchise's behavioral tree stuff:
+sudo apt-get install libgeos-dev # Geometry Engine Open Source (GEOS) needed for shapely
+sudo pip install shapely
+
 echo "End of install_deps.sh script!"
