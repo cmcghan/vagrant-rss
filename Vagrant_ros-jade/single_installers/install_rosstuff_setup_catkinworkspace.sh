@@ -123,8 +123,11 @@ sudo apt-get -y install ros-jade-joy libboost-python-dev
 #sudo apt-get -y install ros-indigo-turtlebot ros-indigo-turtlebot-interactions ros-indigo-turtlebot-apps ros-indigo-turtlebot-simulator ros-indigo-turtlebot-msgs ros-indigo-joy ros-indigo-create-description ros-indigo-kobuki-description ros-indigo-kobuki-node ros-indigo-rocon-app-manager ros-indigo-kobuki-bumper2pc ros-indigo-turtlebot-capabilities ros-indigo-openni2-launch libboost-python-dev ros-indigo-moveit-full
 
 # install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
-sudo apt-get -y install ros-indigo-controller-manager-tests
-sudo apt-get -y install ros-indigo-gazebo-ros-control ros-indigo-ros-controllers
+#sudo apt-get -y install ros-indigo-controller-manager-tests
+sudo apt-get -y install ros-jade-controller-manager-tests
+#sudo apt-get -y install ros-indigo-gazebo-ros-control ros-indigo-ros-controllers
+sudo apt-get -y install ros-jade-ros-controllers
+sudo apt-get -y install ros-jade-gazebo-ros-pkgs # does not include ros-jade-gazebo-ros-control yet
 # then install the p3dx gazebo model from github
 cd /home/$SCRIPTUSER/catkin_ws/src
 # if need to force, then remove old directory first
