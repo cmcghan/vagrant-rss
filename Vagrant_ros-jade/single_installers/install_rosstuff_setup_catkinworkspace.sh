@@ -159,7 +159,11 @@ sudo apt-get -y install ros-jade-controller-manager-tests
 #sudo apt-get -y install ros-indigo-gazebo-ros-control ros-indigo-ros-controllers
 sudo apt-get -y install ros-jade-ros-controllers
 sudo apt-get -y install ros-jade-gazebo-ros-pkgs # does not include ros-jade-gazebo-ros-control yet... do we need it? if we do, then:
-#git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git # includes gazebo_ros_control...
+git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git # includes gazebo_ros_control...
+sudo apt-get -y install ros-jade-ros-control # for gazebo_ros_control, need transmission_interface
+
+#source /usr/share/gazebo/setup.sh ?
+#gazebo
 
 # then install the p3dx gazebo model from github
 cd /home/$SCRIPTUSER/catkin_ws/src
