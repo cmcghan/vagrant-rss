@@ -101,6 +101,15 @@ sudo apt-get -y update
 sudo apt-get -y install gazebo5
 sudo apt-get -y install libgazebo5-dev
 
+# set up gazebo 5.1 via:
+sudo cp -r /usr/share/gazebo-5.0/media /usr/share/gazebo-5.1/
+sudo cp -r /usr/share/gazebo-5.0/worlds /usr/share/gazebo-5.1/
+# then source the gazebo directories and run gazebo...
+#cd /usr/share/gazebo-5.1 ? cd /usr/share/gazebo-5.0 ?
+#source /usr/share/gazebo-5.1/setup.sh 
+#gazebo --verbose
+# ...and then grab all the models from online that you want!
+
 # note: this will install to the home directory of whichever user is calling the script
 # so, if this script is called as user 'vagrant'
 # (e.g., "sudo -u vagrant /vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh")
