@@ -93,6 +93,14 @@ sudo rosdep init
 su - $SCRIPTUSER -c "rosdep update;"
 sudo apt-get -y install python-rosinstall
 
+# install gazebo5, too:
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+cd /home/$SCRIPTUSER/initdeps
+wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+sudo apt-get -y update
+sudo apt-get -y install gazebo5
+sudo apt-get -y install libgazebo5-dev
+
 # note: this will install to the home directory of whichever user is calling the script
 # so, if this script is called as user 'vagrant'
 # (e.g., "sudo -u vagrant /vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh")
@@ -119,7 +127,30 @@ sudo apt-get -y install ros-jade-rosbridge-server
 
 # install turtlebot libraries
 sudo apt-get -y install ros-jade-joy libboost-python-dev
-##sudo apt-get -y install ros-jade-turtlebot ros-jade-turtlebot-interactions ros-jade-turtlebot-apps ros-jade-turtlebot-simulator ros-jade-turtlebot-msgs ros-jade-create-description ros-jade-kobuki-description ros-jade-kobuki-node ros-jade-rocon-app-manager ros-jade-kobuki-bumper2pc ros-jade-turtlebot-capabilities ros-jade-openni2-launch ros-jade-moveit-full
+cd /home/$SCRIPTUSER/catkin_ws/src
+git clone https://github.com/turtlebot/turtlebot.git #ros-jade-turtlebot, ros-jade-turtlebot-capabilities
+git clone https://github.com/turtlebot/turtlebot_interactions.git #ros-jade-turtlebot-interactions
+git clone https://github.com/turtlebot/turtlebot_apps.git #ros-jade-turtlebot-apps
+git clone https://github.com/turtlebot/turtlebot_simulator.git #ros-jade-turtlebot-simulator
+git clone https://github.com/turtlebot/turtlebot_msgs.git #ros-jade-turtlebot-msgs
+git clone https://github.com/turtlebot/turtlebot_create.git #(includes) ros-jade-create-description
+git clone https://github.com/yujinrobot/kobuki.git #(includes) ros-jade-kobuki-description, ros-jade-kobuki-node, ros-jade-kobuki-bumper2pc
+sudo apt-get -y install ros-jade-ecl-core # for kobuki_keyop, need ecl_exceptions
+git clone https://github.com/yujinrobot/kobuki_msgs.git # for kobuki_keyop, need kobuki_msgs
+git clone https://github.com/yujinrobot/yujin_ocs.git # for kobuki_controller_tutorial, need yocs_controllers
+git clone https://github.com/yujinrobot/yocs_msgs.git # for yocs_joyop, need yocs_msgs
+sudo apt-get -y install ros-jade-ar-track-alvar # for yocs_ar_marker_tracking, need ar_track_alvar_msgs
+sudo apt-get -y install ros-jade-base-local-planner # for yocs_navi_toolkit, need base_local_planner
+sudo apt-get -y install ros-jade-move-base-msgs # for yocs_navigator, need move_base_msgs
+git clone https://github.com/yujinrobot/kobuki_core.git # for kobuki_auto_docking, need kobuki_dock_drive
+sudo apt-get -y install libusb-dev libftdi-dev # for kobuki_ftdi, needs <usb.h> and <ftdi.h>
+sudo apt-get -y install ros-jade-ecl-mobile-robot # for kobuki_driver, need ecl_mobile_robot
+git clone https://github.com/robotics-in-concert/rocon_app_platform.git #ros-jade-rocon-app-manager
+sudo apt-get -y install ros-jade-openni2-launch
+sudo apt-get -y install ros-jade-moveit-core ros-jade-moveit-ros ros-jade-moveit-planners-ompl #ros-jade-moveit-full
+git clone https://github.com/ros-planning/moveit_pr2.git #ros-jade-moveit-full
+sudo apt-get -y install ros-jade-pr2-mechanism-msgs ros-jade-pr2-controllers-msgs # for pr2_moveit_plugins, need pr2_mechanism_msgs, pr2_controllers_msgs
+
 #sudo apt-get -y install ros-indigo-turtlebot ros-indigo-turtlebot-interactions ros-indigo-turtlebot-apps ros-indigo-turtlebot-simulator ros-indigo-turtlebot-msgs ros-indigo-joy ros-indigo-create-description ros-indigo-kobuki-description ros-indigo-kobuki-node ros-indigo-rocon-app-manager ros-indigo-kobuki-bumper2pc ros-indigo-turtlebot-capabilities ros-indigo-openni2-launch libboost-python-dev ros-indigo-moveit-full
 
 # install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
@@ -127,7 +158,9 @@ sudo apt-get -y install ros-jade-joy libboost-python-dev
 sudo apt-get -y install ros-jade-controller-manager-tests
 #sudo apt-get -y install ros-indigo-gazebo-ros-control ros-indigo-ros-controllers
 sudo apt-get -y install ros-jade-ros-controllers
-sudo apt-get -y install ros-jade-gazebo-ros-pkgs # does not include ros-jade-gazebo-ros-control yet
+sudo apt-get -y install ros-jade-gazebo-ros-pkgs # does not include ros-jade-gazebo-ros-control yet... do we need it? if we do, then:
+#git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git # includes gazebo_ros_control...
+
 # then install the p3dx gazebo model from github
 cd /home/$SCRIPTUSER/catkin_ws/src
 # if need to force, then remove old directory first
