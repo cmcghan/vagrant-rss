@@ -13,19 +13,52 @@
 #
 
 echo "Start of install_deps.sh script!"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE]"
+echo "(note: order of [SCRIPTUSER] and [FORCE] can be swapped)"
 
-#
-# get -f (force) if given
-#
-
+# set defaults for input arguments
+ROSVERSION=
+SCRIPTUSER="vagrant"
+FORCE=
 # if we get an input parameter (username) then use it, else use default 'vagrant'
-if [ $# -eq 1 ] && [ "$1" == "-f" ]
-then
-    echo "-f (force) commandline argument given. Forcing install of all compiled-from-source components."
-    echo "Note: will -NOT- attempt to force-reinstall RosAria!"
-    FORCE=$1
-else
-    FORCE=
+# get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
+if [ $# -lt 1 ]; then
+    echo "ERROR: No ROS version given as commandline argument. Exiting."
+    exit
+else # at least 1 (possibly 3) argument(s) at commandline...
+    if [ $1 == "indigo" ]; then
+        ROSVERSION="indigo"
+    elif [ $1 == "jade" ]; then
+        ROSVERSION="jade"
+    else
+        echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
+        exit
+    fi
+    echo "ROS version is $ROSVERSION."
+    if [ $# -gt 1 ]; then # at least 2 (possibly more) arguments at commandline...
+        if [ "$2" == "-f" ]; then
+            echo "-f (force) commandline argument given."
+            FORCE=$2
+        else
+            echo "Username given as commandline argument."
+            SCRIPTUSER=$2
+        fi
+        if [ $# -gt 2 ]; then # at least 3 (possibly more) arguments at commandline...
+            if [ "$3" == "-f" ]; then
+                echo "-f (force) commandline argument given."
+                FORCE=$3
+            elif [ $SCRIPTUSER -eq "vagrant" ]; then
+                echo "Username given as commandline argument."
+                SCRIPTUSER=$3
+            else
+                echo "Username already set. Second argument ignored."
+            fi
+        fi
+    fi
+fi
+echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
+if [ $FORCE -eq "-f" ]; then
+    echo "Forcing install of all compiled-from-source components."
 fi
 
 #
@@ -40,7 +73,7 @@ sudo apt-get -y upgrade
 # install dependencies for tulip-control:
 #
 
-# start in the /root directory
+# start in the root directory (if "sudo su" then is "/root")
 cd ~
 # make and move into directory for holding compilation files + downloads
 mkdir -p initdeps
@@ -70,10 +103,10 @@ sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx 
 sudo pip install polytope
 
 # directory should exist, but just to make sure...
-sudo -u vagrant mkdir -p /home/vagrant/catkin_ws/src
+sudo -u $SCRIPTUSER mkdir -p /home/$SCRIPTUSER/catkin_ws/src
 
-# just in case, fix ownership of /home/vagrant/catkin_ws/src
-sudo chown -R vagrant:vagrant /home/vagrant/catkin_ws
+# just in case, fix ownership of /home/$SCRIPTUSER/catkin_ws/src
+sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/catkin_ws
 
 # install gnome-terminal for multiscript*.py runs
 # install rosbridge
@@ -83,7 +116,7 @@ sudo chown -R vagrant:vagrant /home/vagrant/catkin_ws
 # install ROSARIA
 # install deps for MobileSim and MobileSim
 # install python WebSocket library
-/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh vagrant $FORCE
+/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
 
 # install OMPL libraries (cvxopt and glpk already installed above)
 /vagrant/single_installers/install_ompl.sh $FORCE

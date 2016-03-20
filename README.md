@@ -25,19 +25,43 @@ So if you want to use this Vagrantfile, you will need:
 
 It is recommended that you create and use the ROS indigo VagrantBox virtual machine, as the turtlebot libraries are supported natively in indigo, but not jade.
 
-For a ROS indigo Vagrantbox:
-----------------------------
-
-The directory  
-    `./vagrant-rss/Vagrant_ros-indigo`  
+Note that the directory  
+    `./vagrant-rss`  
 is synced with  
     `/vagrant`  
 in the VM.
 
+Also note that these install scripts can be used separately on a native Ubuntu 14.04 install. To do so, try:
+```
+    sudo mkdir /vagrant
+    sudo chown $USER:$USER /vagrant
+    git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
+    cd vagrant-rss
+    chmod +x `find . -name *.sh` # make sure .sh are executable
+    cp -R * /vagrant
+    cd /vagrant
+    sudo su
+    ./install_deps.sh SCRIPTUSER ROSVERSION
+```
+where SCRIPTUSER should be replaced with the name of your user account (e.g., vagrant), and ROSVERSION is the ROS distro to install (either indigo or jade).
+
+Inside the Vagrantbox, these scripts can be rerun post-setup, after the initial `vagrant up` command, via:
+```
+    cd /vagrant
+    sudo su
+    ./install_deps.sh vagrant ROSVERSION -f
+```
+where ROSVERSION is the ROS distro to reinstall (either indigo or jade), and "-f" will force-reinstall the installed-from-source libraries.
+
+For a ROS indigo Vagrantbox:
+----------------------------
+
+Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo
+
 The intended usage is:
 ```
     git clone https://github.com/cmcghan/vagrant-rss.git
-    cd vagrant-rss/Vagrant_ros-indigo
+    cd vagrant-rss
     vagrant box add shadowrobot/ros-indigo-desktop-trusty64
     vagrant up
     vagrant ssh
@@ -47,17 +71,14 @@ The intended usage is:
 For a ROS jade Vagrantbox:
 --------------------------
 
-The directory  
-    `./vagrant-rss/Vagrant_ros-jade`  
-is synced with  
-    `/vagrant`  
-in the VM.
+Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo, thus you must copy the jade Vagrantfile over first before the 'vagrant up' command here.
 
 The intended usage is:
 ```
     git clone https://github.com/cmcghan/vagrant-rss.git
     cd vagrant-rss/Vagrant_ros-jade
     vagrant box add ubuntu/trusty64
+    cp Vagrantfile.jade Vagrantfile
     vagrant up
     vagrant ssh
     cd ~/catkin_ws/src/rss_work

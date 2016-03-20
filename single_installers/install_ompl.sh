@@ -19,8 +19,7 @@ echo "Start of install_ompl.sh script!"
 #
 
 # if we get an input parameter (username) then use it, else use default 'vagrant'
-if [ $# -eq 1 ] && [ "$1" == "-f" ]
-then
+if [ $# -eq 1 ] && [ "$1" == "-f" ]; then
     echo "-f (force) commandline argument given. Forcing install of all compiled-from-source components."
     FORCE=$1
 else
@@ -44,8 +43,7 @@ fi
 # python -c "import pygccxml, pyplusplus"
 # Py++ installs to (this or similar): /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info
 GCCXML_FOUND=`gccxml --version | grep -m 1 "GCC-XML version 0.9.0" | wc -l`
-if [ $GCCXML_FOUND -eq 1 ]
-then
+if [ $GCCXML_FOUND -eq 1 ]; then
     echo "gccxml 0.9.0 already installed!"
 fi
 
@@ -55,8 +53,7 @@ PYGCCXML_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distrib
 # and wc -l should give 1 if pygccxml 1.6.1 was found
 
 # version number not set inside python (pkg_resources won't work)
-if [ ! -f /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info ]
-then
+if [ ! -f /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info ]; then
     PYPLUSPLUS_FOUND=0
 else
     echo "pyplusplus 1.0.0 already installed!"
@@ -74,8 +71,7 @@ fi
 #    PYPLUSPLUS_FOUND=0
 #fi
 
-if [ ! -f /usr/local/lib/x86_64-linux-gnu/libompl_app.so.1.1.1 ] || [ ! -f /usr/local/lib/x86_64-linux-gnu/libompl.so.1.1.1 ]
-then
+if [ ! -f /usr/local/lib/x86_64-linux-gnu/libompl_app.so.1.1.1 ] || [ ! -f /usr/local/lib/x86_64-linux-gnu/libompl.so.1.1.1 ]; then
     OMPLCPP_FOUND=0
 else
     echo "OMPL and OMPLapp 1.1.1 cpp already installed!"
@@ -85,8 +81,7 @@ fi
 # this pipes stderr ("2>") to grep using ">()" and wc -l counts the number of lines
 PYTHON_FINDS_OMPL=`python -c "import ompl" 2> >(grep -m 1 -o "ImportError") | wc -l`
 # 0 if fine, 1 if get an ImportError
-if [ $PYTHON_FINDS_OMPL -eq 0 ]
-then
+if [ $PYTHON_FINDS_OMPL -eq 0 ]; then
     echo "OMPL python libraries found by python!"
     OMPLPY_FOUND=1
 else
@@ -102,8 +97,7 @@ fi
 #fi
 
 # exit script immediately if libraries are already installed
-if [ "$FORCE" != "-f" ] && [ $OMPLCPP_FOUND -eq 1 ] && [ $OMPLPY_FOUND -eq 1 ]
-then
+if [ "$FORCE" != "-f" ] && [ $OMPLCPP_FOUND -eq 1 ] && [ $OMPLPY_FOUND -eq 1 ]; then
     echo "OMPL libraries already installed and (the cpp version, at least) looks to be up-to-date, exiting..."
     exit 0
 fi
@@ -132,7 +126,7 @@ cd ~/initdeps
 sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo apt-get -y install software-properties-common # for add-apt-repository
 sudo add-apt-repository -y ppa:libccd-debs/ppa # libccd-dev requires ppa
-sudo apt-get update # update to include new ppa repo list(s)
+sudo apt-get -y update # update to include new ppa repo list(s)
 sudo apt-get -y install libboost-all-dev cmake libccd-dev python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev libeigen3-dev libode-dev doxygen graphviz
 sudo apt-get -y install texlive-fonts-recommended # required for 'make doc' not to hang
 sudo apt-get -y install python-pip
@@ -144,12 +138,10 @@ sudo pip install Flask-Celery-Helper
 # end 'pip install's
 cd ~/initdeps
 # if need to force, then remove old directory first
-if [ "$FORCE" == "-f" ]
-then
+if [ "$FORCE" == "-f" ]; then
     rm -rf omplapp-1.1.1-Source
 fi
-if [ "$FORCE" == "-f" ] || [ ! -f omplapp-1.1.1-Source.tar.gz ]
-then
+if [ "$FORCE" == "-f" ] || [ ! -f omplapp-1.1.1-Source.tar.gz ]; then
     wget https://bitbucket.org/ompl/ompl/downloads/omplapp-1.1.1-Source.tar.gz
     tar xvzf omplapp-1.1.1-Source.tar.gz
 fi
@@ -168,40 +160,38 @@ echo "Done with 'cmake ../..'."
 # --> /usr/local/share/gccxml-0.9/*
 # --> /usr/local/bin/gccxml
 # --> /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info
-if [ "$FORCE" == "-f" ] || [ $GCCXML_FOUND -eq 0 ] || [ $PYGCCXML_FOUND -eq 0 ] || [ $PYPLUSPLUS_FOUND -eq 0 ]
-then
+if [ "$FORCE" == "-f" ] || [ $GCCXML_FOUND -eq 0 ] || [ $PYGCCXML_FOUND -eq 0 ] || [ $PYPLUSPLUS_FOUND -eq 0 ]; then
     echo " "
     echo "Now performing: make installpyplusplus && cmake ."
-    echo " "
-    echo "(2) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
-    echo " "
     echo " "
     make installpyplusplus && cmake . # download & install Py++
     echo "Done with 'make installpyplusplus && cmake .'"
 else
     echo "gccxml, pygccxml, pyplusplus already installed. Skipping 'make installpyplusplus && cmake .' step."
 fi
+echo " "
 echo "Now performing: make update_bindings..."
-echo " "
-echo "(3) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
-echo " "
 echo " "
 make update_bindings # can have memory issues at this step(?!) or is it the next one(?) ("internal compiler error: Killed (program cc1plus)")
 echo "Done with 'make update_bindings'."
+echo " "
 echo "Now performing: make -j 2..."
-echo " "
-echo "(4) NOTE: IF A FIREFOX WINDOW POPS UP ASKING YOU TO REGISTER, YOU MUST CLOSE IT FOR THE INSTALLATION TO CONTINUE!"
-echo " "
 echo " "
 make -j 2 # -j 4 is for 4 parallel jobs (e.g., 4 cores)
 echo "Done with 'make -j 2'."
+echo " "
 echo "Now performing: make test..."
+echo " "
 make test
 echo "Done with 'make test'."
+echo " "
 echo "Now performing: make doc..."
+echo " "
 make doc
 echo "Done with 'make doc'."
+echo " "
 echo "Now performing: sudo make install..."
+echo " "
 sudo make install
 echo "Done with 'sudo make install'."
 
