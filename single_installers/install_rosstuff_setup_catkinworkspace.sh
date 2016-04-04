@@ -97,17 +97,19 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net --recv-key 0xB01FA116
 sudo apt-get -y update
 sudo apt-get -y install ros-$ROSVERSION-desktop-full # will not hurt anything if preinstalled
-sudo rosdep init
-su - $SCRIPTUSER -c "rosdep update;"
+if [ $ROSVERSION -eq "indigo" ]; then
+    sudo rosdep init
+    su - $SCRIPTUSER -c "rosdep update;"
+fi
 sudo apt-get -y install python-rosinstall
 
 sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 cd ~/initdeps
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt-get -y update
-if [ $ROSVERSION -eq "indigo" ]; then # install gazebo2, too
+if [ "$ROSVERSION" -eq "indigo" ]; then # install gazebo2, too
     sudo apt-get -y install gazebo2 gazebo2-dbg ros-$ROSVERSION-gazebo-ros
-elif [ $ROSVERSION -eq "jade" ]; then # install gazebo5, too
+elif [ "$ROSVERSION" -eq "jade" ]; then # install gazebo5, too
     sudo apt-get -y install gazebo5 libgazebo5-dev
     # set up gazebo 5.1 via:
     sudo cp -r /usr/share/gazebo-5.0/media /usr/share/gazebo-5.1/
@@ -146,9 +148,9 @@ sudo apt-get -y install ros-$ROSVERSION-rosbridge-server
 # install turtlebot libraries
 sudo apt-get -y install ros-$ROSVERSION-joy libboost-python-dev
 sudo apt-get -y install ros-$ROSVERSION-openni2-launch
-if [ $ROSVERSION -eq "indigo" ]; then
+if [ "$ROSVERSION" -eq "indigo" ]; then
     sudo apt-get -y install ros-$ROSVERSION-turtlebot ros-$ROSVERSION-turtlebot-interactions ros-$ROSVERSION-turtlebot-apps ros-$ROSVERSION-turtlebot-simulator ros-$ROSVERSION-turtlebot-msgs  ros-$ROSVERSION-create-description ros-$ROSVERSION-kobuki-description ros-$ROSVERSION-kobuki-node ros-$ROSVERSION-rocon-app-manager ros-$ROSVERSION-kobuki-bumper2pc ros-$ROSVERSION-turtlebot-capabilities ros-$ROSVERSION-moveit-full
-elif [ $ROSVERSION -eq "jade" ]; then
+elif [ "$ROSVERSION" -eq "jade" ]; then
     cd /home/$SCRIPTUSER/catkin_ws/src
     if [ "$FORCE" == "-f" ]; then
         rm -rf turtlebot
@@ -217,9 +219,9 @@ fi
 # install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
 sudo apt-get -y install ros-$ROSVERSION-controller-manager-tests
 sudo apt-get -y install ros-$ROSVERSION-ros-controllers
-if [ $ROSVERSION -eq "indigo" ]; then
+if [ "$ROSVERSION" -eq "indigo" ]; then
     sudo apt-get -y install ros-$ROSVERSION-gazebo-ros-control
-elif [ $ROSVERSION -eq "jade" ]; then
+elif [ "$ROSVERSION" -eq "jade" ]; then
     sudo apt-get -y install ros-$ROSVERSION-gazebo-ros-pkgs # does not include ros-jade-gazebo-ros-control yet... do we need it? if we do, then:
     echo "ROS $ROSVERSION doesn't have ros-$ROSVERSION-ros-control package in ros-$ROSVERSION-gazebo-ros-pkgs (yet). Source install via 'git clone' now:"
     cd /home/$SCRIPTUSER/catkin_ws/src    
