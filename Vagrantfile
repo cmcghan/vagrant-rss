@@ -138,6 +138,6 @@ Vagrant.configure(2) do |config|
     # on the "shadowrobot/ros-indigo-desktop-trusty64" base box
     #
 
-    /vagrant/install_deps.sh vagrant indigo
+    /vagrant/install_deps.sh indigo vagrant
   SHELL
 end

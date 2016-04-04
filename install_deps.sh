@@ -133,7 +133,50 @@ sudo pip install pulp
 /vagrant/single_installers/install_ipopt.sh $FORCE
 
 # install python libraries for Michele Colledanchise's behavioral tree stuff:
-sudo apt-get install libgeos-dev # Geometry Engine Open Source (GEOS) needed for shapely
+sudo apt-get -y install libgeos-dev # Geometry Engine Open Source (GEOS) needed for shapely
 sudo pip install shapely
+
+# install eclipse for development environment for Oktay's RRT# (RRT-sharp) planner
+sudo apt-get -y install eclipse-platform
+# install dependencies for Ravi's ROS-native wrapper for the RRT# code (service call)
+sudo apt-get -y install gcc g++ patch wget
+# C++ Armadillo library: http://arma.sourceforge.net/download.html
+sudo apt-get -y install cmake libopenblas-dev liblapack-dev libatlas-dev libarpack2-dev libsuperlu3-dev # libsuperlu-dev # libarpack-dev
+sudo apt-get -y install libarmadillo-dev # installs 4.200.0, not 6.600.5 latest
+cd ~/initdeps
+wget http://sourceforge.net/projects/arma/files/armadillo-6.600.5.tar.gz
+tar xvzf armadillo-6.600.5.tar.gz
+cd armadillo-6.600.5
+cmake .
+make
+sudo make install
+# YAML-CPP: https://github.com/jbeder/yaml-cpp/releases/tag/release-0.5.3
+# This is the patched release. Latest git pull has an issue ( https://github.com/jbeder/yaml-cpp/commit/34bd1a7083e5875e6a4b2d4f61c0b356cc5d53fc )
+cd ~/initdeps
+wget https://github.com/jbeder/yaml-cpp/archive/release-0.5.3.tar.gz
+tar xvzf release-0.5.3.tar.gz
+cd yaml-cpp-release-0.5.3
+mkdir build
+cd build
+cmake .. -DBUILD_SHARED_LIBS=ON
+make clean all
+make
+sudo make install
+# then take rrtsharp.tar.gz, place in ~/catkin_ws/src, and catkin_make inside ~/catkin_ws
+#pull_from_wherever
+#cd /home/$SCRIPTUSER/
+#sudo -u vagrant tar xvzf rrtsharp.tar.gz # extracts to directory /home/$SCRIPTUSER/catkin_ws/src/rrt
+#cd ..
+#su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd /home/$SCRIPTUSER/catkin_ws; source devel/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
+# check that functions like "driver" are available as dynamically-linked functions in the library with static names
+#python
+#import ctypes
+#ctypes.CDLL
+##<class 'ctypes.CDLL'>
+#ctypes.CDLL("librrt.so")
+##<CDLL 'librrt.so', handle 2257580 at 7f5b71fde110>
+#ctypes.CDLL("librrt.so").driver
+##<_FuncPtr object at 0x7f5b71f7a460>
+#exit()
 
 echo "End of install_deps.sh script!"
