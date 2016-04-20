@@ -89,7 +89,8 @@ cd initdeps
 /vagrant/single_installers/install_gr1c.sh $FORCE
 
 # install tulip-control v1.1a system-wide
-/vagrant/single_installers/install_tulip1.1a.sh $FORCE
+#/vagrant/single_installers/install_tulip1.1a.sh $FORCE
+/vagrant/single_installers/install_tulip1.2.0.sh $FORCE
 
 #
 # install other RSE dependencies:
@@ -98,7 +99,7 @@ cd initdeps
 # install recommended software for python development (python-pip already installed above)
 sudo apt-get -y install spyder geany python-dev build-essential dos2unix
 
-# install polytope library (python-pip already installed above)
+# install polytope library (if not already installed via tulip-1.2.0) (python-pip already installed above)
 sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx python-pip
 sudo pip install polytope
 
@@ -178,5 +179,49 @@ sudo make install
 #ctypes.CDLL("librrt.so").driver
 ##<_FuncPtr object at 0x7f5b71f7a460>
 #exit()
+
+# install yaml in Python (PyYAML with LibYAML bindings) for yaml read-ins
+# Instructions here: 
+# * http://pyyaml.org/wiki/PyYAMLDocumentation
+# * http://pyyaml.org/wiki/PyYAML
+# * http://pyyaml.org/wiki/LibYAML
+#
+# install PyYAML via:
+# $ wget http://pyyaml.org/download/pyyaml/PyYAML-3.11.tar.gz
+# $ tar xvzf PyYAML-3.11.tar.gz
+# $ cd PyYAML-3.11
+# $ sudo python setup.py install
+#
+# for LibYAML bindings instead:
+# install LibYAML via:
+cd ~/initdeps
+wget http://pyyaml.org/download/libyaml/yaml-0.1.5.tar.gz
+tar xvzf yaml-0.1.5.tar.gz
+cd yaml-0.1.5
+./configure
+make
+sudo make install
+# download PyYAML above, then install using LibYAML bindings:
+cd ~/initdeps
+wget http://pyyaml.org/download/pyyaml/PyYAML-3.11.tar.gz
+tar xvzf PyYAML-3.11.tar.gz
+cd PyYAML-3.11
+sudo python setup.py --with-libyaml install
+#
+# then:
+#
+#from yaml import load, dump
+#try: # LibYAML
+#    from yaml import CLoader as Loader, CDumper as Dumper
+#except ImportError: # fallback on PyYAML
+#    from yaml import Loader, Dumper
+# ...
+#data = load(stream, Loader=Loader)
+# ...
+#output = dump(data, Dumper=Dumper)
+
+
+
+
 
 echo "End of install_deps.sh script!"

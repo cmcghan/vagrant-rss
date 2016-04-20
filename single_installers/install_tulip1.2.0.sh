@@ -12,7 +12,7 @@
 # on the "shadowrobot/ros-indigo-desktop-trusty64" base box
 #
 
-echo "Start of install_tulip1.1a.sh script!"
+echo "Start of install_tulip1.2.0.sh script!"
 
 #
 # get -f (force) if given
@@ -32,14 +32,14 @@ fi
 #
 
 # check for version of tulip-control
-TULIP_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distribution('tulip').version)" | grep -m 1 -o "1.1a-dev-unknown-commit" | wc -l`
-# pkg_resources should give '1.1a-dev-unknown-commit'
+TULIP_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distribution('tulip').version)" | grep -m 1 -o "1.2.0" | wc -l`
+# pkg_resources should give '1.2.0'
 # grep should find a match and repeat it
-# and wc -l should give 1 if tulip 1.1a was found
+# and wc -l should give 1 if tulip 1.2.0 was found
 
 if [ $TULIP_FOUND -eq 1 ]
 then
-    echo "tulip 1.1a already installed!"
+    echo "tulip 1.2.0 already installed!"
 fi
 
 # exit script immediately if libraries are already installed
@@ -75,49 +75,31 @@ cd ~/initdeps
 # back to compilation/install directory (/root/initdeps)
 cd ~/initdeps
 
-#
 # install tulip-control v1.1a system-wide
-#
 sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo apt-get -y install default-jre default-jdk
-
-#polytope 0.1.1 doesn't play nice with tulip-1.1a
-#polytope 0.1.0 plays nice with tulip-1.1a
-#--> see tulip-1.1a/run_tests.py (will FAIL if polytope 0.1.1 is used)
-#note that tulip-1.1a seems to try and install newest version of polytope (0.1.1) from PyPi automatically (even if an older version exists, likely using pip)
-#one can download and manually install polytope 0.1.0 ("sudo python setup.py install") and then run ./run_tests.py with it (without recompiling tulip-1.1a), though it does seem slower
-
-# install polytope 0.1.0 system-wide (https://pypi.python.org/pypi/polytope/0.1.0)
-# if need to force, then remove old directory first
+#note that tulip-1.2.0 does not try and install newest version of polytope (0.1.1) from PyPi automatically if an older version exists
+sudo apt-get -y install python-pip # installs pip if not already installed
+sudo pip install polytope # won't force an upgrade if not installed before
 if [ "$FORCE" == "-f" ]
 then
-    rm -rf .
+    sudo pip install --upgrade polytope # do this to force newest version of polytope (and other deps: numpy, scipy, cvxopt, networkx) to install (polytope 0.1.1 as of 2016-04-20)
 fi
-if [ "$FORCE" == "-f" ] || [ ! -f polytope-0.1.0.tar.gz ]
-then
-    wget https://pypi.python.org/packages/source/p/polytope/polytope-0.1.0.tar.gz#md5=1eca56d647340acab6314431c568319f
-    tar xvzf polytope-0.1.0.tar.gz
-fi
-cd polytope-0.1.0
-sudo python setup.py install
-
-# install tulip-control v1.1a system-wide
 cd ~/initdeps
 # if need to force, then remove old directory first
 if [ "$FORCE" == "-f" ]
 then
-    rm -rf tulip-control-1.1a
+    rm -rf tulip-1.2.0
 fi
-if [ "$FORCE" == "-f" ] || [ ! -f v1.1a.tar.gz ]
+if [ "$FORCE" == "-f" ] || [ ! -f tulip-1.2.0.tar.gz ]
 then
-    wget https://github.com/tulip-control/tulip-control/archive/v1.1a.tar.gz
-    tar xvzf v1.1a.tar.gz
-    cd tulip-control-1.1a
-    sed -i.orig '290s/polytope >= 0.1.0/polytope >= 0.1.0,<0.1.1/' setup.py
-    # 'polytope >= 0.1.0', --> 'polytope >= 0.1.0,<0.1.1', # inside 'install_requires'
-    cd ..
+    wget https://pypi.python.org/packages/source/t/tulip/tulip-1.2.0.tar.gz#md5=20034ce18b665356abfa5684e496f20a
+    tar xvzf tulip-1.2.0.tar.gz
 fi
-cd tulip-control-1.1a
+cd tulip-1.2.0
+# optional: attempt to install jtlv:
+cd extern
+#sudo extern/get-jtlv.sh
 sudo python setup.py install
 
-echo "End of install_tulip1.1a.sh script!"
+echo "End of install_tulip1.2.0.sh script!"

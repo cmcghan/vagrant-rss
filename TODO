@@ -1,0 +1,16 @@
+polytope 0.1.1 doesn't play nice with tulip-1.1a
+polytope 0.1.0 plays nice with tulip-1.1a
+--> see tulip-1.1a/run_tests.py (will FAIL if polytope 0.1.1 is used)
+
+note that tulip-1.1a seems to try and install newest version of polytope (0.1.1) from PyPi automatically (even if an older version exists, likely using pip)
+
+one can download and manually install polytope 0.1.0 ("sudo python setup.py install") and then run ./run_tests.py with it (without recompiling tulip-1.1a), though it does seem slower
+
+--> Need to look and see if a newer stable revision of tulip exists
+--> if not, need to add a mod to tulip download (setup.py?) that cites/pulls polytope 0.1.0 as a dependency
+--> should also add the run_tests.py as a test that autoruns after all is said and done to check the installation
+
+
+Okay, it looks like tulip-1.2 is the latest stable release, available on PyPi. I should add/ modify the internal tulip install script to have a pypi install (and download+extract for interested users) for this instead.
+
+--EOF--
