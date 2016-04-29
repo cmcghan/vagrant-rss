@@ -119,8 +119,7 @@ sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/catkin_ws
 # install python WebSocket library
 /vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
 
-# install OMPL libraries (cvxopt and glpk already installed above)
-/vagrant/single_installers/install_ompl.sh $FORCE
+# OMPL install moved to bottom of file due to possible installation issues under some circumstances
 
 # install Matlab toolboxes for deliberative/psulu-jpl-matlab
 # --> to be added! (lpsolve or gurobi or cplex, yalmip, Matlab-Ros-Interface)
@@ -136,6 +135,18 @@ sudo pip install pulp
 # install python libraries for Michele Colledanchise's behavioral tree stuff:
 sudo apt-get -y install libgeos-dev # Geometry Engine Open Source (GEOS) needed for shapely
 sudo pip install shapely
+# now, Michele Colledanchise's Behavior Tree work :)
+cd ~/initdeps
+git clone https://github.com/miccol/Behavior-Tree.git behavior_tree
+cd behavior_tree
+mkdir ./build
+cd build
+cmake ..
+make
+sudo make install # to install system-wide
+# check installation via:
+cd build/sample
+./example
 
 # install eclipse for development environment for Oktay's RRT# (RRT-sharp) planner
 sudo apt-get -y install eclipse-platform
@@ -220,8 +231,7 @@ sudo python setup.py --with-libyaml install
 # ...
 #output = dump(data, Dumper=Dumper)
 
-
-
-
+# install OMPL libraries (cvxopt and glpk already installed above)
+/vagrant/single_installers/install_ompl.sh $FORCE
 
 echo "End of install_deps.sh script!"

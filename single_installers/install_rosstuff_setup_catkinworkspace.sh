@@ -89,6 +89,8 @@ fi
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
+sudo apt-get -y install wget curl # for wget and possible curl use below
+
 #
 # install ROS indigo OR jade (for "ubuntu/trusty64" box)
 # --> comment out for "shadowrobot/ros-indigo-desktop-trusty64" box (pre-installed)
@@ -136,8 +138,6 @@ then
     rm -rf /home/$SCRIPTUSER/catkin_ws/devel
     rm -rf /home/$SCRIPTUSER/catkin_ws/build
 fi
-
-sudo apt-get -y install wget curl # for wget and possible curl use below
 
 # install gnome-terminal for multiscript*.py runs
 sudo apt-get -y install gnome-terminal
@@ -298,12 +298,12 @@ mkdir -p ~/initdeps/rosbridgeclient
 cd ~/initdeps/rosbridgeclient
 # if need to force, then remove old directory first
 if [ "$FORCE" == "-f" ]; then
-    rm -rf WebSocket-for-Python
+    rm -rf "WebSocket-for-Python"
 fi
-if [ ! -d WebSocket-for-Python ]; then
-    git clone https://github.com/Lawouach/WebSocket-for-Python.git
+if [ ! -d "WebSocket-for-Python" ]; then
+    git clone "https://github.com/Lawouach/WebSocket-for-Python.git"
 fi
-cd WebSocket-for-Python
+cd "WebSocket-for-Python"
 if [ "$FORCE" == "-f" ] || [ $WS4PY_FOUND -eq 0 ]; then
     sudo python setup.py install
 fi
@@ -339,5 +339,18 @@ su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd /home/$SCRIPTUSER/catk
 #3$ cd ~/catkin_ws && source devel/setup.bash
 #3$ roslaunch freefloating_gazebo_demo manual.launch
 
+# install USARSimROS + libraries
+#sudo apt-get -y install ???
+#cd /home/$SCRIPTUSER/initdeps/
+#wget http://downloads.sourceforge.net/project/usarsim/usarsim-UDK/USARSimFull_UDKV1.2.zip
+#unzip 
+#cd /home/$SCRIPTUSER/catkin_ws/src
+## if need to force, then remove old directory first
+#if [ "$FORCE" == "-f" ]; then
+#    rm -rf PioneerModel
+#fi
+#if [ ! -d PioneerModel ]; then
+#    sudo -u $SCRIPTUSER git clone https://github.com/SD-Robot-Vision/PioneerModel.git
+#fi
 
 echo "End of install_rosstuff_setup_catkinworkspace.sh script!"
