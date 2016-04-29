@@ -98,8 +98,7 @@ then
 fi
 cd tulip-1.2.0
 # optional: attempt to install jtlv:
-cd extern
-#sudo extern/get-jtlv.sh
+sudo extern/get-jtlv.sh
 sudo python setup.py install
 
 echo "End of install_tulip1.2.0.sh script!"

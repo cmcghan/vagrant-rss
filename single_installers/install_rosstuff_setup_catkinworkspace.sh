@@ -8,7 +8,7 @@
 #
 
 echo "Start of install_rosstuff_setup_catkinworkspace.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE]"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE (-f)]"
 echo "(note: default [SCRIPTUSER] is "vagrant")"
 
 #

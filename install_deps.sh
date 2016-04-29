@@ -13,8 +13,8 @@
 #
 
 echo "Start of install_deps.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE]"
-echo "(note: order of [SCRIPTUSER] and [FORCE] can be swapped)"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE (-f)]"
+echo "(note: order of [SCRIPTUSER] and -f argument can be swapped)"
 
 # set defaults for input arguments
 ROSVERSION=

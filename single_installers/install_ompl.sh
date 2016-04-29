@@ -128,6 +128,7 @@ sudo apt-get -y install software-properties-common # for add-apt-repository
 sudo add-apt-repository -y ppa:libccd-debs/ppa # libccd-dev requires ppa
 sudo apt-get -y update # update to include new ppa repo list(s)
 sudo apt-get -y install libboost-all-dev cmake libccd-dev python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev libeigen3-dev libode-dev doxygen graphviz
+#sudo apt-get -y install libompl-dev
 sudo apt-get -y install texlive-fonts-recommended # required for 'make doc' not to hang
 sudo apt-get -y install python-pip
 sudo pip install PyOpenGL-accelerate

@@ -33,12 +33,7 @@ in the VM.
 
 Also note that these install scripts can be used separately on a native Ubuntu 14.04 install. To do so, try:
 ```
-    sudo mkdir /vagrant
-    sudo chown $USER:$USER /vagrant
-    git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
-    cd vagrant-rss
-    chmod +x `find . -name *.sh` # make sure .sh are executable
-    cp -R * /vagrant
+    sudo git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
     cd /vagrant
     sudo su
     ./install_deps.sh SCRIPTUSER ROSVERSION
@@ -76,7 +71,7 @@ Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo, t
 The intended usage is:
 ```
     git clone https://github.com/cmcghan/vagrant-rss.git
-    cd vagrant-rss/Vagrant_ros-jade
+    cd vagrant-rss
     vagrant box add ubuntu/trusty64
     cp Vagrantfile.jade Vagrantfile
     vagrant up
