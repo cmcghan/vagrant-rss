@@ -9,7 +9,7 @@
 
 echo "Start of install_rosstuff_setup_catkinworkspace.sh script!"
 echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE (-f)]"
-echo "(note: default [SCRIPTUSER] is "vagrant")"
+echo "(note: default [SCRIPTUSER] is \"vagrant\")"
 
 #
 # NOTE: this file does the following:
@@ -27,7 +27,7 @@ echo "(note: default [SCRIPTUSER] is "vagrant")"
 
 # set defaults for input arguments
 ROSVERSION=
-SCRIPTUSER="vagrant"
+SCRIPTUSER=vagrant
 FORCE=
 # if we get an input parameter (username) then use it, else use default 'vagrant'
 # get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
@@ -35,10 +35,10 @@ if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
 else # at least 1 (possibly 3) argument(s) at commandline...
-    if [ $1 == "indigo" ]; then
-        ROSVERSION="indigo"
-    elif [ $1 == "jade" ]; then
-        ROSVERSION="jade"
+    if [ "$1" == "indigo" ]; then
+        ROSVERSION=indigo
+    elif [ "$1" == "jade" ]; then
+        ROSVERSION=jade
     else
         echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
         exit
@@ -56,7 +56,7 @@ else # at least 1 (possibly 3) argument(s) at commandline...
     fi
 fi
 echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
-if [ $FORCE -eq "-f" ]; then
+if [ "$FORCE" -eq "-f" ]; then
     echo "Forcing install of all compiled-from-source components."
 fi
 
@@ -99,13 +99,14 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net --recv-key 0xB01FA116
 sudo apt-get -y update
 sudo apt-get -y install ros-$ROSVERSION-desktop-full # will not hurt anything if preinstalled
-if [ $ROSVERSION -eq "indigo" ]; then
+if [ "$ROSVERSION" -eq "indigo" ]; then
     sudo rosdep init
     su - $SCRIPTUSER -c "rosdep update;"
 fi
 sudo apt-get -y install python-rosinstall
 
 sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+mkdir -p initdeps
 cd ~/initdeps
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt-get -y update

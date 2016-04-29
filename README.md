@@ -72,8 +72,8 @@ The intended usage is:
 ```
     git clone https://github.com/cmcghan/vagrant-rss.git
     cd vagrant-rss
-    vagrant box add ubuntu/trusty64
     cp Vagrantfile.jade Vagrantfile
+    vagrant box add ubuntu/trusty64
     vagrant up
     vagrant ssh
     cd ~/catkin_ws/src/rss_work

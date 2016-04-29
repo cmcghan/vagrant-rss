@@ -22,7 +22,7 @@
 #
 # The intended usage is:
 #   git clone https://github.com/cmcghan/vagrant-rss.git
-#   cd vagrant-rss/Vagrant_ros-indigo
+#   cd vagrant-rss
 #   vagrant box add shadowrobot/ros-indigo-desktop-trusty64
 #   vagrant up
 #   vagrant ssh
