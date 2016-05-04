@@ -137,16 +137,33 @@ sudo apt-get -y install libgeos-dev # Geometry Engine Open Source (GEOS) needed 
 sudo pip install shapely
 # now, Michele Colledanchise's Behavior Tree work :)
 cd ~/initdeps
-git clone https://github.com/miccol/Behavior-Tree.git behavior_tree
+if [ "$FORCE" == "-f" ]
+then
+    rm -rf behavior_tree
+fi
+if [ ! -d behavior_tree ]; then
+    git clone https://github.com/miccol/Behavior-Tree.git behavior_tree
+    # roll back to known version (for now, while waiting for pull request to go through)
+    cd behavior_tree
+    git checkout dab73334aea95a05691485b871947266be52d4d0
+    sed -i.orig '78s/add_executable(example/add_executable(btpp_example/' CMakeLists.txt
+    sed -i.orig '79s/target_link_libraries(example/target_link_libraries(btpp_example/' CMakeLists.txt
+    sed -i.orig '85s/target_link_libraries(btpp ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${Boost_LIBRARIES})/target_link_libraries(btpp ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${Boost_LIBRARIES})\n\n######################################################\n# INSTALLATION OF LIBRARY AND EXECUTABLE\n######################################################\ninstall (TARGETS btpp_example DESTINATION bin)\ninstall (TARGETS btpp DESTINATION lib)/' CMakeLists.txt
+    cd ..
+fi
 cd behavior_tree
 mkdir ./build
 cd build
 cmake ..
-make
-sudo make install # to install system-wide
+make # "Note the installation generates the shared library in /build/lib and the sample conde in /build/sample"
+sudo make install # to install system-wide, requires 'sed' above to work...
+# CMakeLists.txt requires an addition of "install()", see: https://cmake.org/cmake-tutorial/
+# see also: https://cmake.org/cmake/help/v3.0/command/install.html
+# see also: http://stackoverflow.com/questions/6003374/what-is-cmake-equivalent-of-configure-prefix-dir-make-all-install #cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && sudo make all install
 # check installation via:
-cd build/sample
-./example
+#cd ~/initdeps/behavior_tree
+#cd build/sample
+#./example
 
 # install eclipse for development environment for Oktay's RRT# (RRT-sharp) planner
 sudo apt-get -y install eclipse-platform
