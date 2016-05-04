@@ -15,24 +15,18 @@ Requirements, Setup, Use
 
 See the individual Vagrantfile(s) for up-to-date information on requirements, setup, and use.
 
-The virtual machine created by the indigo Vagrantfile requires:
-* 2 CPUs, 4GB RAM, 40GB space (dynamic)
-
-So if you want to use this Vagrantfile, you will need:
-* a virtual 4-core CPU or higher, >8GB RAM, >30GB of space free
-
-The virtual machine created by the jade Vagrantfile requires:
-* 4 CPUs, 4GB RAM, 40GB space (dynamic)
-
-So if you want to use this Vagrantfile, you will need:
-* a virtual 8-core CPU or higher, >8GB RAM, >30GB of space free
+Note that the default vagrantfile ("Vagrantfile") is a copy of Vagrantfile.indigo
 
 It is recommended that you create and use the ROS indigo VagrantBox virtual machine, as the turtlebot libraries are supported natively in indigo, but not jade.
 
 For a ROS indigo Vagrantbox:
 ----------------------------
 
-Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo
+The virtual machine created by the indigo Vagrantfile requires:
+* 2 CPUs, 4GB RAM, 40GB space (dynamic)
+
+So if you want to use this Vagrantfile, you will need:
+* a virtual 4-core CPU or higher, >8GB RAM, >30GB of space free
 
 The intended usage is:
 
@@ -46,6 +40,12 @@ The intended usage is:
 
 For a ROS jade Vagrantbox:
 --------------------------
+
+The virtual machine created by the jade Vagrantfile requires:
+* 4 CPUs, 4GB RAM, 40GB space (dynamic)
+
+So if you want to use this Vagrantfile, you will need:
+* a virtual 8-core CPU or higher, >8GB RAM, >30GB of space free
 
 Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo, thus you must copy the jade Vagrantfile over first before the `vagrant up` command here.
 
@@ -105,7 +105,7 @@ Post-install and/or Non-Vagrantbox Use
 Native Ubuntu 14.04 install:
 ----------------------------
 
-Note that these install scripts can be used separately on a native Ubuntu 14.04 install. To do so, try:
+Note that these install scripts (install_deps.sh, and the scripts in the single_installers directory) can be used separately on a native Ubuntu 14.04 install. To do so, try:
 
     sudo git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
     cd /vagrant
@@ -117,7 +117,7 @@ where **SCRIPTUSER** should be replaced with the name of your user account (e.g.
 Post-install updates to Vagrant VM:
 -----------------------------------
 
-Note that the directory  
+Note that the `git clone`'d directory  
 `./vagrant-rss`  
 is synced with  
 `/vagrant`  
@@ -131,7 +131,7 @@ Inside the Vagrantbox, these scripts can be rerun post-setup, after the initial 
 
 where **ROSVERSION** is the ROS distro to reinstall (either **indigo** or **jade**), and **-f** will force-reinstall the installed-from-source libraries.
 
-The latter is most useful when the installation files have been updated in the github repository; one can simply `git pull` an updated version of the installation scripts and rerun them to install the new dependencies.
+The latter is most useful when the installation scripts in the github repository have been updated -- one can simply `git pull` an updated version of the installation scripts and then rerun them to install the new library dependencies.
 
 
 License
