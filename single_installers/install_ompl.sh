@@ -181,11 +181,11 @@ echo " "
 make -j 2 # -j 4 is for 4 parallel jobs (e.g., 4 cores)
 echo "Done with 'make -j 2'."
 echo " "
-echo "Now performing: make test..."
-echo " "
-make test
-echo "Done with 'make test'."
-echo " "
+#echo "Now performing: make test..."
+#echo " "
+#make test
+#echo "Done with 'make test'."
+#echo " "
 echo "Now performing: make doc..."
 echo " "
 make doc
