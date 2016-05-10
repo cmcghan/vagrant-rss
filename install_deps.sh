@@ -15,6 +15,7 @@
 echo "Start of install_deps.sh script!"
 echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE (-f)]"
 echo "(note: order of [SCRIPTUSER] and -f argument can be swapped)"
+echo "(note: default SCRIPTUSER is \"vagrant\")"
 
 # set defaults for input arguments
 ROSVERSION=
@@ -242,5 +243,10 @@ sudo python setup.py --with-libyaml install
 
 # install OMPL libraries (cvxopt and glpk already installed above)
 /vagrant/single_installers/install_ompl.sh $FORCE
+
+# install Google TensorFlow for Ravi Kiran's machine learning work:
+/vagrant/single_installers/install_tensorflow0.8.0.sh $SCRIPTUSER $FORCE
+# note that this installs TensowFlow to a VirtualEnv session for the given $SCRIPTUSER
+# also note that the python3 install may not work / may error out...
 
 echo "End of install_deps.sh script!"
