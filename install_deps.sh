@@ -102,7 +102,14 @@ sudo apt-get -y install spyder geany python-dev build-essential dos2unix
 
 # install polytope library (if not already installed via tulip-1.2.0) (python-pip already installed above)
 sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx python-pip
-sudo pip install polytope
+#sudo pip install polytope # won't force an upgrade if not installed before # current version in repo (0.1.1) has issues with numpy >= 1.10 (because of version string parsing in quickhull.py); note that polytope won't work properly with numpy <=1.5.9 (unique1d() instead of unique())
+sudo pip install --upgrade pip
+sudo pip install --upgrade numpy
+sudo pip install --upgrade scipy
+cd ~/initdeps
+git clone https://github.com/tulip-control/polytope.git
+cd polytope
+sudo pip install . # pip install polytope from local download
 
 # directory should exist, but just to make sure...
 sudo -u $SCRIPTUSER mkdir -p /home/$SCRIPTUSER/catkin_ws/src

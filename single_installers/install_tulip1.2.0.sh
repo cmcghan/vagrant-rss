@@ -79,8 +79,16 @@ cd ~/initdeps
 sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo apt-get -y install default-jre default-jdk
 #note that tulip-1.2.0 does not try and install newest version of polytope (0.1.1) from PyPi automatically if an older version exists
-sudo apt-get -y install python-pip # installs pip if not already installed
-sudo pip install polytope # won't force an upgrade if not installed before
+sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx python-pip
+#sudo pip install polytope # won't force an upgrade if not installed before # current version in repo (0.1.1) has issues with numpy >= 1.10 (because of version string parsing in quickhull.py); note that polytope won't work properly with numpy <=1.5.9 (unique1d() instead of unique())
+sudo pip install --upgrade pip
+sudo pip install --upgrade numpy
+sudo pip install --upgrade scipy
+cd ~/initdeps
+git clone https://github.com/tulip-control/polytope.git
+cd polytope
+sudo pip install . # pip install polytope from local download
+
 if [ "$FORCE" == "-f" ]
 then
     sudo pip install --upgrade polytope # do this to force newest version of polytope (and other deps: numpy, scipy, cvxopt, networkx) to install (polytope 0.1.1 as of 2016-04-20)
