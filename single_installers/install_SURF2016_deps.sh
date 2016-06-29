@@ -114,9 +114,9 @@ sudo apt-get -y install wget curl # for wget and possible curl use below
 sudo usermod -a -G dialout $USER
 sudo chmod a+rw /dev/ttyACM0
 
+#
 # other deps asked for by Ioannis and/or Sandra:
-
-
+#
 
 sudo apt-get -y install geda
 
@@ -125,13 +125,18 @@ sudo apt-get -y install geda
 mkdir -p ~/initdeps
 cd ~/initdeps
 # see: https://github.com/atom/atom/releases/latest
-wget https://github.com/atom/atom/releases/download/v1.8.0/atom-amd64.deb
+# if need to force, then remove old directory first
+if [ "$FORCE" == "-f" ]; then
+    rm -rf atom-amd64.deb
+fi
+if [ ! -f atom-amd64.deb ]; then
+    wget https://github.com/atom/atom/releases/download/v1.8.0/atom-amd64.deb
+fi
 sudo dpkg --install atom-amd64.deb
 
 sudo apt-get -y install build-essential libsqlite3-dev libreadline-dev libncurses5-dev libssl-dev libbz2-dev libgdbm-dev tk-dev
 sudo apt-get -y install gcc-avr binutils-avr gdb-avr avr-libc avrdude
 
 sudo apt-get -y install screen
-
 
 echo "End of install_SURF2016_deps.sh script!"
