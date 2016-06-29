@@ -12,20 +12,6 @@ echo "input arguments: [SCRIPTUSER] [FORCE (-f)]"
 echo "(note: order of [SCRIPTUSER] and -f argument can be swapped)"
 echo "(note: default SCRIPTUSER is \"vagrant\")"
 
-#
-# NOTE: this file does the following:
-# (ROS indigo is pre-installed on the "shadowrobot/ros-indigo-desktop-trusty64" base box)
-# (install ROS jade on "ubuntu/trusty64" (add servers to apt-get list, add key, then install))
-# install gnome-terminal for multiscript*.py runs
-# install rosbridge
-# install turtlebot libraries (-=currently may be limited for jade!!!=-)
-# install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
-# set up catkin workspace
-# install ROSARIA
-# install deps for MobileSim and MobileSim
-# install python WebSocket library
-#
-
 # set defaults for input arguments
 SCRIPTUSER=vagrant
 FORCE=
