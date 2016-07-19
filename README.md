@@ -1,6 +1,20 @@
 # vagrant-rss
 Vagrantfile(s) for setting up a VM for the RSE implementation (includes installation scripts)
 
+Table of Contents
+=================
+
+* Installation
+* Requirements, Setup, Use
+  * For a ROS indigo Vagrantbox:
+  * For a ROS jade Vagrantbox:
+  * Shutting down the Vagrant session:
+  * Choice of access to VirtualBox:
+* Post-install and/or Non-Vagrantbox Use
+  * Native Ubuntu 14.04 install:
+  * Post-install updates to Vagrant VM:
+* License
+* Contact
 
 Installation
 ============
@@ -110,9 +124,9 @@ Note that these install scripts (install_deps.sh, and the scripts in the single_
     sudo git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
     cd /vagrant
     sudo su
-    ./install_deps.sh SCRIPTUSER ROSVERSION
+    ./install_deps.sh ROSVERSION SCRIPTUSER
 
-where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant**), and **ROSVERSION** is the ROS distro to install (either **indigo** or **jade**).
+where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant** if your username is vagrant and you want to set up the ROS catkin workspace inside your directory), and **ROSVERSION** is the ROS distro to install (either **indigo** or **jade**).
 
 Post-install updates to Vagrant VM:
 -----------------------------------
@@ -127,7 +141,7 @@ Inside the Vagrantbox, these scripts can be rerun post-setup, after the initial 
 
     cd /vagrant
     sudo su
-    ./install_deps.sh vagrant ROSVERSION -f
+    ./install_deps.sh ROSVERSION vagrant -f
 
 where **ROSVERSION** is the ROS distro to reinstall (either **indigo** or **jade**), and **-f** will force-reinstall the installed-from-source libraries.
 
