@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright by California Institute of Technology
+# Copyright by California Institute of Technology, University of Cincinnati
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 
@@ -10,6 +10,7 @@
 #
 # Note: Ubuntu X-Windows Desktop and ROS indigo are pre-installed
 # on the "shadowrobot/ros-indigo-desktop-trusty64" base box
+# but -not- on either of the "ubuntu/trusty64" or "ubuntu/xenial64" base boxes
 #
 
 echo "Start of install_deps.sh script!"
@@ -27,12 +28,25 @@ if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
 else # at least 1 (possibly 3) argument(s) at commandline...
-    if [ $1 == "indigo" ]; then
+    # need to get O/S argument first, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
+    # see: http://www.ros.org/reps/rep-0003.html
+    #      http://www.unixtutorial.org/commands/lsb_release/
+    #      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+    #UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+    # cleaner version from ROS install instructions:
+    UCODENAME=`lsb_release -sc`
+    echo "Ubuntu version is: $UCODENAME"
+    echo "Commandline argument 1 is: $1"
+    if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
         ROSVERSION="indigo"
-    elif [ $1 == "jade" ]; then
+    elif [ $1 == "jade" ] && [ $UCODENAME == "trusty" ]; then
         ROSVERSION="jade"
+    elif [ $1 == "kinetic" ] && [ $UCODENAME == "xenial" ]; then
+        ROSVERSION="kinetic"
     else
-        echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
+        echo "ERROR: Unknown ROS version given as commandline argument -or- ROS version does not match O/S."
+        echo "Currently, install_deps.sh supports trusty with indigo and jade only, xenial with kinetic only."
+        echo "Exiting."
         exit
     fi
     echo "ROS version is $ROSVERSION."
@@ -63,6 +77,14 @@ if [ $FORCE -eq "-f" ]; then
 fi
 
 #
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
 # run installation + upgrades
 #
 
@@ -84,14 +106,18 @@ cd initdeps
 #cd ~/initdeps
 
 # install glpk and cvxopt:
-/vagrant/single_installers/install_glpk_cvxopt.sh $FORCE
+#/vagrant/single_installers/install_glpk_cvxopt.sh $FORCE
+$ABSOLUTE_PATH/single_installers/install_glpk_cvxopt.sh $FORCE
     
 # install gr1c:
-/vagrant/single_installers/install_gr1c.sh $FORCE
+#/vagrant/single_installers/install_gr1c.sh $FORCE
+$ABSOLUTE_PATH/single_installers/install_gr1c.sh $FORCE
 
 # install tulip-control v1.1a system-wide
 #/vagrant/single_installers/install_tulip1.1a.sh $FORCE
-/vagrant/single_installers/install_tulip1.2.0.sh $FORCE
+#$ABSOLUTE_PATH/vagrant/single_installers/install_tulip1.1a.sh $FORCE
+#/vagrant/single_installers/install_tulip1.2.0.sh $FORCE
+$ABSOLUTE_PATH/single_installers/install_tulip1.2.0.sh $FORCE
 
 #
 # install other RSE dependencies:
@@ -125,7 +151,8 @@ sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/catkin_ws
 # install ROSARIA
 # install deps for MobileSim and MobileSim
 # install python WebSocket library
-/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
+#/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
+$ABSOLUTE_PATH/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
 
 # OMPL install moved to bottom of file due to possible installation issues under some circumstances
 
@@ -138,7 +165,8 @@ sudo apt-get -y install python-mpmath python-pip
 sudo pip install pulp
 
 # install python libraries for deliberative/psulu_picard (doxygen installed above)
-/vagrant/single_installers/install_ipopt.sh $FORCE
+#/vagrant/single_installers/install_ipopt.sh $FORCE
+$ABSOLUTE_PATH/single_installers/install_ipopt.sh $FORCE
 
 # install python libraries for Michele Colledanchise's behavioral tree stuff:
 sudo apt-get -y install libgeos-dev # Geometry Engine Open Source (GEOS) needed for shapely
@@ -249,10 +277,12 @@ sudo python setup.py --with-libyaml install
 #output = dump(data, Dumper=Dumper)
 
 # install OMPL libraries (cvxopt and glpk already installed above)
-/vagrant/single_installers/install_ompl.sh $FORCE
+#/vagrant/single_installers/install_ompl.sh $FORCE
+$ABSOLUTE_PATH/single_installers/install_ompl.sh $FORCE
 
 # install Google TensorFlow for Ravi Kiran's machine learning work:
-/vagrant/single_installers/install_tensorflow0.8.0.sh $SCRIPTUSER $FORCE
+#/vagrant/single_installers/install_tensorflow0.8.0.sh $SCRIPTUSER $FORCE
+$ABSOLUTE_PATH/single_installers/install_tensorflow0.8.0.sh $SCRIPTUSER $FORCE
 # note that this installs TensowFlow to a VirtualEnv session for the given $SCRIPTUSER
 # also note that the python3 install may not work / may error out...
 

@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright by California Institute of Technology
+# Copyright by California Institute of Technology, University of Cincinnati
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 
@@ -42,6 +42,14 @@ then
     echo "Ipopt libraries already installed and up-to-date, exiting..."
     exit 0
 fi
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
 # run installation + upgrades

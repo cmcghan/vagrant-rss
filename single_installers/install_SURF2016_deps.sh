@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright by California Institute of Technology
+# Copyright by California Institute of Technology, University of Cincinnati
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 
@@ -65,6 +65,14 @@ fi
 # longer test from within python:
 # >>> from ws4py.client.threadedclient import WebSocketClient
 # >>> testclient = WebSocketClient('ws://localhost:9090/')
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
 # run installation + upgrades

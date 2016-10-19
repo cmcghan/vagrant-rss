@@ -8,10 +8,12 @@ Table of Contents
 * Requirements, Setup, Use
   * For a ROS indigo Vagrantbox:
   * For a ROS jade Vagrantbox:
+  * For a ROS kinetic Vagrantbox:
   * Shutting down the Vagrant session:
   * Choice of access to VirtualBox:
 * Post-install and/or Non-Vagrantbox Use
   * Native Ubuntu 14.04 install:
+  * Native Ubuntu 16.04 install:
   * Post-install updates to Vagrant VM:
 * License
 * Contact
@@ -23,6 +25,11 @@ Install VirtualBox and Vagrant on your machine first before attempting to use th
 * VirtualBox: https://www.virtualbox.org/wiki/Downloads
 * Vagrant: https://www.vagrantup.com/downloads.html
 
+Optional install:
+* Git: https://git-scm.com/downloads
+ * note that you can download and unpack the repo manually if you don't want to install git to your main O/S environment
+ * https://github.com/cmcghan/vagrant-rss/archive/master.zip
+ * https://github.com/cmcghan/vagrant-rss/archive/ubuntu-16.04-xenial.zip
 
 Requirements, Setup, Use
 ========================
@@ -73,7 +80,27 @@ The intended usage is:
     vagrant ssh
     cd ~/catkin_ws/src/rss_work
 
+For a ROS kinetic Vagrantbox:
+-----------------------------
 
+The virtual machine created by the jade Vagrantfile requires:
+* 2 CPUs, 4GB RAM, 40GB space (dynamic)
+
+So if you want to use this Vagrantfile, you will need:
+* a virtual 4-core CPU or higher, >8GB RAM, >30GB of space free
+
+Note that the default vagrantfile Vagrantfile is a copy of Vagrantfile.indigo, thus you must copy the kinetic Vagrantfile over first before the `vagrant up` command here.
+
+The intended usage is:
+
+    git clone -b ubuntu-16.04-xenial https://github.com/cmcghan/vagrant-rss.git
+    cd vagrant-rss
+    cp Vagrantfile.kinetic Vagrantfile
+    vagrant box add ubuntu/xenial64
+    vagrant up --provider virtualbox
+    vagrant ssh
+    cd ~/catkin_ws/src/rss_work
+    
 Shutting down the Vagrant session:
 ----------------------------------
 
@@ -101,7 +128,7 @@ to stop the current session.
 
 After this:
 * Open your VirtualBox application.
-* Select the "rss_indigo_development_machine" or "rss_jade_development_machine" in the left panel, and click on "Start".
+* Select the "rss_indigo_development_machine" or "rss_jade_development_machine" or "rss_kinetic_development_machine" in the left panel, and click on "Start".
 
 The VM session should start, and you should be logged in automatically as user "ros".
 
@@ -128,6 +155,19 @@ Note that these install scripts (install_deps.sh, and the scripts in the single_
 
 where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant** if your username is vagrant and you want to set up the ROS catkin workspace inside your directory), and **ROSVERSION** is the ROS distro to install (either **indigo** or **jade**).
 
+Native Ubuntu 16.04 install:
+----------------------------
+
+Note that these install scripts (install_deps.sh, and the scripts in the single_installers directory) can be used separately on a native Ubuntu 14.04 install. To do so, try:
+
+    sudo git clone -b ubuntu-16.04-xenial https://github.com/cmcghan/vagrant-rss.git /vagrant
+    cd /vagrant
+    sudo su
+    ./install_deps.sh ROSVERSION SCRIPTUSER
+
+where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant** if your username is vagrant and you want to set up the ROS catkin workspace inside your directory), and **ROSVERSION** is the ROS distro to install (**kinetic**).
+
+
 Post-install updates to Vagrant VM:
 -----------------------------------
 
@@ -143,7 +183,7 @@ Inside the Vagrantbox, these scripts can be rerun post-setup, after the initial 
     sudo su
     ./install_deps.sh ROSVERSION vagrant -f
 
-where **ROSVERSION** is the ROS distro to reinstall (either **indigo** or **jade**), and **-f** will force-reinstall the installed-from-source libraries.
+where **ROSVERSION** is the ROS distro to reinstall (either **indigo** or **jade** or **kinetic**), and **-f** will force-reinstall the installed-from-source libraries.
 
 The latter is most useful when the installation scripts in the github repository have been updated -- one can simply `git pull` an updated version of the installation scripts and then rerun them to install the new library dependencies.
 
@@ -159,6 +199,6 @@ When code is modified or re-distributed, the LICENSE file should accompany the c
 Contact
 =======
 
-If you have any questions regarding the contents of this repository, please email Catharine McGhan at <cmcghan@cms.caltech.edu>.
+If you have any questions regarding the contents of this repository, please email Catharine McGhan at <cat.mcghan@uc.edu>.
 
 -EOF-

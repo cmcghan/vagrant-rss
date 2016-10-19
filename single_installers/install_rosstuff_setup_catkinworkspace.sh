@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright by California Institute of Technology
+# Copyright by California Institute of Technology, University of Cincinnati
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 
@@ -15,6 +15,7 @@ echo "(note: default [SCRIPTUSER] is \"vagrant\")"
 # NOTE: this file does the following:
 # (ROS indigo is pre-installed on the "shadowrobot/ros-indigo-desktop-trusty64" base box)
 # (install ROS jade on "ubuntu/trusty64" (add servers to apt-get list, add key, then install))
+# (install ROS kinetic on "ubuntu/xenial64" (add servers to apt-get list, add key, then install))
 # install gnome-terminal for multiscript*.py runs
 # install rosbridge
 # install turtlebot libraries (-=currently may be limited for jade!!!=-)
@@ -35,14 +36,36 @@ if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
 else # at least 1 (possibly 3) argument(s) at commandline...
-    if [ "$1" == "indigo" ]; then
-        ROSVERSION=indigo
-    elif [ "$1" == "jade" ]; then
-        ROSVERSION=jade
+    # need to get O/S argument first, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
+    # see: http://www.ros.org/reps/rep-0003.html
+    #      http://www.unixtutorial.org/commands/lsb_release/
+    #      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+    #UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+    # cleaner version from ROS install instructions:
+    UCODENAME=`lsb_release -sc`
+    echo "Ubuntu version is: $UCODENAME"
+    echo "Commandline argument 1 is: $1"
+    if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
+        ROSVERSION="indigo"
+    elif [ $1 == "jade" ] && [ $UCODENAME == "trusty" ]; then
+        ROSVERSION="jade"
+    elif [ $1 == "kinetic" ] && [ $UCODENAME == "xenial" ]; then
+        ROSVERSION="kinetic"
     else
-        echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
+        echo "ERROR: Unknown ROS version given as commandline argument -or- ROS version does not match O/S."
+        echo "Currently, install_deps.sh supports trusty with indigo and jade only, xenial with kinetic only."
+        echo "Exiting."
         exit
     fi
+    # older/original code follows, commented-out, can be removed:
+    #if [ "$1" == "indigo" ]; then
+    #    ROSVERSION=indigo
+    #elif [ "$1" == "jade" ]; then
+    #    ROSVERSION=jade
+    #else
+    #    echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
+    #    exit
+    #fi
     echo "ROS version is $ROSVERSION."
     if [ $# -lt 2 ]; then
         echo "Single username not given as commandline argument. Using default of '$SCRIPTUSER'."
@@ -56,6 +79,7 @@ else # at least 1 (possibly 3) argument(s) at commandline...
     fi
 fi
 echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
+echo "Will be setting up catkin workspace under /home/$SCRIPTUSER/catkin_ws..."
 if [ "$FORCE" -eq "-f" ]; then
     echo "Forcing install of all compiled-from-source components."
 fi
@@ -82,6 +106,14 @@ fi
 # >>> testclient = WebSocketClient('ws://localhost:9090/')
 
 #
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
 # run installation + upgrades
 #
 
@@ -96,10 +128,11 @@ sudo apt-get -y install wget curl # for wget and possible curl use below
 # --> comment out for "shadowrobot/ros-indigo-desktop-trusty64" box (pre-installed)
 #
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net --recv-key 0xB01FA116
+sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net:80 --recv-key 0xB01FA116
 sudo apt-get -y update
 sudo apt-get -y install ros-$ROSVERSION-desktop-full # will not hurt anything if preinstalled
-if [ "$ROSVERSION" -eq "indigo" ]; then
+# if rosdep sources file list has -not- already been initialized:
+if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then # rosdep init this
     sudo rosdep init
     su - $SCRIPTUSER -c "rosdep update;"
 fi
@@ -122,6 +155,8 @@ elif [ "$ROSVERSION" -eq "jade" ]; then # install gazebo5, too
     #source /usr/share/gazebo-5.1/setup.sh 
     #gazebo --verbose
     # ...and then grab all the models from online that you want!
+elif [ "$ROSVERSION" -eq "kinetic" ]; then # install gazebo7, too
+    sudo apt-get -y install gazebo7 libgazebo7-dev
 fi
 
 # note: this will install to the home directory of user $SCRIPTUSER
@@ -151,6 +186,9 @@ sudo apt-get -y install ros-$ROSVERSION-joy libboost-python-dev
 sudo apt-get -y install ros-$ROSVERSION-openni2-launch
 if [ "$ROSVERSION" -eq "indigo" ]; then
     sudo apt-get -y install ros-$ROSVERSION-turtlebot ros-$ROSVERSION-turtlebot-interactions ros-$ROSVERSION-turtlebot-apps ros-$ROSVERSION-turtlebot-simulator ros-$ROSVERSION-turtlebot-msgs  ros-$ROSVERSION-create-description ros-$ROSVERSION-kobuki-description ros-$ROSVERSION-kobuki-node ros-$ROSVERSION-rocon-app-manager ros-$ROSVERSION-kobuki-bumper2pc ros-$ROSVERSION-turtlebot-capabilities ros-$ROSVERSION-moveit-full
+    # said-also-required from: http://wiki.ros.org/turtlebot/Tutorials/indigo/Debs%20Installation
+    # sudo apt-get -y install ros-indigo-kobuki-ftdi ros-indigo-rocon-remocon # look like they may be included as auto-dependencies? need to check
+    # sudo apt-get -y ros-indigo-rocon-qt-library ros-indigo-ar-track-alvar-msgs # look like they may be included as auto-dependencies? need to check
 elif [ "$ROSVERSION" -eq "jade" ]; then
     cd /home/$SCRIPTUSER/catkin_ws/src
     if [ "$FORCE" == "-f" ]; then
@@ -162,7 +200,7 @@ elif [ "$ROSVERSION" -eq "jade" ]; then
         rm -rf turtlebot_create
         rm -rf kobuki
         rm -rf kobuki_msgs
-        rm -rf yukin_ocs
+        rm -rf yujin_ocs
         rm -rf yocs_msgs
         rm -rf kobuki_core
         rm -rf rocon_app_platform
@@ -210,11 +248,63 @@ elif [ "$ROSVERSION" -eq "jade" ]; then
     if [ ! -d rocon_app_platform ]; then
         sudo -u $SCRIPTUSER git clone https://github.com/robotics-in-concert/rocon_app_platform.git #ros-jade-rocon-app-manager
     fi
-    sudo apt-get -y install ros-$ROSVERSION-moveit-core ros-$ROSVERSION-moveit-ros ros-$ROSVERSION-moveit-planners-ompl #ros-jade-moveit-full
+    sudo apt-get -y install ros-$ROSVERSION-moveit # should include -core, -ros, -planners
+    #sudo apt-get -y install ros-$ROSVERSION-moveit-core ros-$ROSVERSION-moveit-ros ros-$ROSVERSION-moveit-planners-ompl #ros-jade-moveit-full
     if [ ! -d moveit_pr2 ]; then
         sudo -u $SCRIPTUSER git clone https://github.com/ros-planning/moveit_pr2.git #ros-jade-moveit-full
     fi
     sudo apt-get -y install ros-$ROSVERSION-pr2-mechanism-msgs ros-$ROSVERSION-pr2-controllers-msgs # for pr2_moveit_plugins, need pr2_mechanism_msgs, pr2_controllers_msgs
+elif [ "$ROSVERSION" -eq "kinetic" ]; then
+    sudo apt-get -y install ros-$ROSVERSION-turtlebot ros-$ROSVERSION-turtlebot-interactions ros-$ROSVERSION-turtlebot-apps ros-$ROSVERSION-turtlebot-simulator ros-$ROSVERSION-turtlebot-msgs  ros-$ROSVERSION-create-description ros-$ROSVERSION-kobuki-description ros-$ROSVERSION-kobuki-node ros-$ROSVERSION-rocon-app-manager ros-$ROSVERSION-kobuki-bumper2pc ros-$ROSVERSION-turtlebot-capabilities ros-$ROSVERSION-moveit-full
+    # packages that don't exist as of 2016-10-19:
+    # ros-kinetic-moveit-full
+    # see issues list: https://github.com/ros-planning/moveit/issues/18
+
+#
+# *** mainly untested git pulls and compiles below!!! ***
+#
+
+    # said-also-required from: http://wiki.ros.org/turtlebot/Tutorials/indigo/Debs%20Installation
+    # sudo apt-get -y ros-$ROSVERSION-rocon-qt-library ros-$ROSVERSION-ar-track-alvar-msgs # not included as auto-dependencies above
+    # latter is handled by specific package install below
+    cd /home/$SCRIPTUSER/catkin_ws/src
+    if [ "$FORCE" == "-f" ]; then
+        #rm -rf rocon_qt_gui
+        #rm -rf 0.7-indigo
+        rm -rf moveit
+        rm -rf moveit_pr2
+        rm -rf pr2_controllers
+        rm -rf pr2_mechanism_msgs
+        rm -rf pr2_mechanism
+    fi
+    sudo apt-get -y install ros-$ROSVERSION-ar-track-alvar # for yocs_ar_marker_tracking, need ar_track_alvar_msgs
+    # ros-indigo-rocon-qt-library ???? -- is part of rocon-qt-gui; either need indigo branch or goes w/renaming:
+    #if [ ! -d rocon_qt_gui ]; then
+    #sudo -u $SCRIPTUSER git clone https://github.com/robotics-in-concert/rocon_qt_gui.git # devel branch
+    #fi
+    #if [ ! -d 0.7-indigo ]; then
+    #sudo -u $SCRIPTUSER git clone https://github.com/robotics-in-concert/rocon_qt_gui/tree/release/0.7-indigo.git # indigo version
+    #fi
+    # ros-kinetic-moveit-full:
+    # ros-kinetic-moveit-core ros-kinetic-moveit-ros ros-kinetic-moveit-planners-ompl
+    if [ ! -d moveit ]; then
+        sudo -u $SCRIPTUSER git clone https://github.com/ros-planning/moveit.git #ros-kinetic-moveit-full
+    fi
+    # optional(?) with ros-kinetic-moveit-full:
+    if [ ! -d moveit_pr2 ]; then
+        #sudo -u $SCRIPTUSER git clone https://github.com/ros-planning/moveit_pr2.git #ros-"indigo"-moveit-full (for jade)
+        sudo -u $SCRIPTUSER git clone -b kinetic-devel https://github.com/ros-planning/moveit_pr2.git #ros-kinetic-moveit-full
+    fi
+    # for pr2_moveit_plugins, need pr2_mechanism_msgs, pr2_controllers_msgs
+    if [ ! -d pr2_controllers ]; then
+    sudo -u $SCRIPTUSER git clone https://github.com/pr2/pr2_controllers.git # for pr2_moveit_plugins, need pr2_controllers_msgs
+    fi
+    if [ ! -d pr2_mechanism_msgs ]; then
+    sudo -u $SCRIPTUSER git clone https://github.com/PR2/pr2_mechanism_msgs.git # for pr2_moveit_plugins, need pr2_mechanism_msgs
+    fi
+    if [ ! -d pr2_mechanism ]; then
+    sudo -u $SCRIPTUSER git clone https://github.com/pr2/pr2_mechanism.git # adding pr2_mechanism, just in case
+    fi
 fi
 
 # install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
@@ -231,6 +321,8 @@ elif [ "$ROSVERSION" -eq "jade" ]; then
     fi
     sudo -s $SCRIPTUSER git clone https://github.com/ros-simulation/gazebo_ros_pkgs.git # includes gazebo_ros_control...
     sudo apt-get -y install ros-jade-ros-control # for gazebo_ros_control, need transmission_interface
+elif [ "$ROSVERSION" -eq "kinetic" ]; then
+    sudo apt-get -y install ros-$ROSVERSION-gazebo-ros-control
 fi
 # then install the p3dx gazebo model from github
 cd /home/$SCRIPTUSER/catkin_ws/src
