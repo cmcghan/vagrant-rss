@@ -13,6 +13,9 @@
 #
 
 echo "Start of install_tulip1.2.0.sh script!"
+echo "input arguments: [-f]"
+echo "(note: optional input arguments in [])"
+echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 #
 # find O/S codename
@@ -40,7 +43,7 @@ fi
 # see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
 #
 RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #

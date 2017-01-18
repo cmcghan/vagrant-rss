@@ -8,22 +8,27 @@
 #
 
 echo "Start of install_rosstuff_setup_catkinworkspace.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [FORCE (-f)]"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
+echo "(note: optional input arguments in [])"
+echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
 echo "(note: default [SCRIPTUSER] is \"vagrant\")"
+echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
+echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
+echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 #
 # NOTE: this file does the following:
-# (ROS indigo is pre-installed on the "shadowrobot/ros-indigo-desktop-trusty64" base box)
-# (install ROS jade on "ubuntu/trusty64" (add servers to apt-get list, add key, then install))
-# (install ROS kinetic on "ubuntu/xenial64" (add servers to apt-get list, add key, then install))
-# install gnome-terminal for multiscript*.py runs
-# install rosbridge
-# install turtlebot libraries (-=currently may be limited for jade!!!=-)
-# install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
-# set up catkin workspace
-# install ROSARIA
-# install deps for MobileSim and MobileSim
-# install python WebSocket library
+# (does NOT install ROS indigo, as ROS indigo is pre-installed on the "shadowrobot/ros-indigo-desktop-trusty64" base box)
+# (if requested, installs ROS jade on "ubuntu/trusty64" (add servers to apt-get list, add key, then install))
+# (if requested, installs ROS kinetic on "ubuntu/xenial64" (add servers to apt-get list, add key, then install))
+# installs gnome-terminal for multiscript*.py runs
+# installs rosbridge
+# installs turtlebot libraries (-=currently may be limited for jade!!!=-)
+# installs (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
+# sets up catkin workspace
+# installs ROSARIA
+# installs deps for MobileSim and installs MobileSim
+# installs python WebSocket library
 #
 
 #
@@ -52,7 +57,7 @@ fi
 # see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
 #
 RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
@@ -62,13 +67,14 @@ echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 # set defaults for input arguments
 ROSVERSION=
 SCRIPTUSER=vagrant
+WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
 FORCE=
 # if we get an input parameter (username) then use it, else use default 'vagrant'
 # get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
 if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
-else # at least 1 (possibly 3) argument(s) at commandline...
+else # at least 1 (possibly 4) argument(s) at commandline...
     # check against O/S argument, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
     echo "Commandline argument 1 is: $1"
     if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
@@ -96,16 +102,49 @@ else # at least 1 (possibly 3) argument(s) at commandline...
     if [ $# -lt 2 ]; then
         echo "Single username not given as commandline argument. Using default of '$SCRIPTUSER'."
     else # at least 2 (possibly more) arguments at commandline...
-        echo "Username given as commandline argument."
-        SCRIPTUSER=$2
-        if [ $# -gt 2 ] && [ "$3" == "-f" ]; then # at least 3 (possibly more) arguments at commandline...
+        if [ "$2" == "-f" ]; then # -f is last argument at commandline...
             echo "-f (force) commandline argument given."
-            FORCE=$3
+            FORCE=$2
+            echo "Default user and workspace directory path will be used."
+        else # SCRIPTUSER should be argument #2
+            # but we need to / should check against the users that have home directories / can log in
+            HOMEDIRFORUSER_FOUND=`ls -1 /home | grep -m 1 -o "$2" | wc -l`
+            # grep should find a match and repeat it
+            # and wc -l should give 1 if argument #2 is a username that has a home directory associated with it
+            if [ $HOMEDIRFORUSER_FOUND -eq 1 ]; then
+                echo "Username given as commandline argument."
+                SCRIPTUSER=$2
+                if [ $# -lt 3 ]; then
+                    echo "Workspace not given as commandline argument. Using default of '$WORKSPACEDIR'."
+                else # at least 3 (possibly more) arguments at commandline...
+                    if [ "$3" == "-f" ]; then # -f is last argument at commandline...
+                        echo "-f (force) commandline argument given."
+                        FORCE=$3
+                        echo "Default workspace directory path will be used."
+                    else # WORKSPACEDIR should be argument #3
+                        echo "Workspace directory given as commandline argument."
+                        WORKSPACEDIR=$3
+                        if [ $# -gt 3 ] && [ "$4" == "-f" ]; then # at least 4 (possibly more) arguments at commandline...
+                            echo "-f (force) commandline argument given."
+                            FORCE=$4
+                        fi
+                    fi
+                fi
+            else # already checked for a -f, and not a user, so WORKSPACEDIR should be argument #2
+                echo "Commandline argument #2 is not a username."
+                echo "Workspace directory given as commandline argument."
+                WORKSPACEDIR=$2
+                echo "Default user will be used."
+                if [ $# -gt 2 ] && [ "$3" == "-f" ]; then # at least 3 (possibly more) arguments at commandline...
+                    echo "-f (force) commandline argument given."
+                    FORCE=$3
+                fi
+            fi
         fi
     fi
 fi
 echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
-echo "Will be setting up catkin workspace under /home/$SCRIPTUSER/catkin_ws..."
+echo "Will be setting up catkin workspace under $WORKSPACEDIR..."
 if [ "$FORCE" -eq "-f" ]; then
     echo "Forcing install of all compiled-from-source components."
 fi
@@ -142,8 +181,8 @@ sudo apt-get -y upgrade
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
 #
-# install ROS indigo OR jade (for "ubuntu/trusty64" box)
-# --> comment out for "shadowrobot/ros-indigo-desktop-trusty64" box (pre-installed)
+# install ROS indigo OR jade OR kinetic (for "ubuntu/trusty64" box)
+# --> can comment out for "shadowrobot/ros-indigo-desktop-trusty64" box (ROS indigo is pre-installed on that Vagrantbox)
 #
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net:80 --recv-key 0xB01FA116
