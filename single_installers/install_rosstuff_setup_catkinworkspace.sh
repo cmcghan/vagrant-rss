@@ -14,6 +14,7 @@ echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade 
 echo "(note: default [SCRIPTUSER] is \"vagrant\")"
 echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
 echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
+echo "WORKSPACEDIR must specify the absolute path of the directory"
 echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 #
@@ -114,30 +115,23 @@ else # at least 1 (possibly 4) argument(s) at commandline...
             if [ $HOMEDIRFORUSER_FOUND -eq 1 ]; then
                 echo "Username given as commandline argument."
                 SCRIPTUSER=$2
-                if [ $# -lt 3 ]; then
-                    echo "Workspace not given as commandline argument. Using default of '$WORKSPACEDIR'."
-                else # at least 3 (possibly more) arguments at commandline...
-                    if [ "$3" == "-f" ]; then # -f is last argument at commandline...
-                        echo "-f (force) commandline argument given."
-                        FORCE=$3
-                        echo "Default workspace directory path will be used."
-                    else # WORKSPACEDIR should be argument #3
-                        echo "Workspace directory given as commandline argument."
-                        WORKSPACEDIR=$3
-                        if [ $# -gt 3 ] && [ "$4" == "-f" ]; then # at least 4 (possibly more) arguments at commandline...
-                            echo "-f (force) commandline argument given."
-                            FORCE=$4
-                        fi
-                    fi
-                fi
-            else # already checked for a -f, and not a user, so WORKSPACEDIR should be argument #2
-                echo "Commandline argument #2 is not a username."
-                echo "Workspace directory given as commandline argument."
-                WORKSPACEDIR=$2
-                echo "Default user will be used."
-                if [ $# -gt 2 ] && [ "$3" == "-f" ]; then # at least 3 (possibly more) arguments at commandline...
+            else # already checked for a -f, and not a user... (note: WORKSPACEDIR not allowed to be given without SCRIPTUSER argument)
+                echo "Bad username given as commandline argument. Using default username."
+            fi
+            if [ $# -lt 3 ]; then
+                echo "Workspace not given as commandline argument. Using default of '$WORKSPACEDIR'."
+            else # at least 3 (possibly more) arguments at commandline...
+                if [ "$3" == "-f" ]; then # -f is last argument at commandline...
                     echo "-f (force) commandline argument given."
                     FORCE=$3
+                    echo "Default workspace directory path will be used."
+                else # WORKSPACEDIR should be argument #3
+                    echo "Workspace directory given as commandline argument."
+                    WORKSPACEDIR=$3
+                    if [ $# -gt 3 ] && [ "$4" == "-f" ]; then # at least 4 (possibly more) arguments at commandline...
+                        echo "-f (force) commandline argument given."
+                        FORCE=$4
+                    fi
                 fi
             fi
         fi
