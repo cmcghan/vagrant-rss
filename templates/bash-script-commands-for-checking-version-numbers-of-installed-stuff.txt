@@ -1,0 +1,66 @@
+# bash script commands for checking version numbers of installed stuff(!!)
+
+#
+# check for installation
+#
+
+#
+# methods to check for libraries of a specific name and with known directory / install location:
+#
+#if [ ! -f /usr/local/lib/python2.7/dist-packages/ompl/geometric/_geometric.so ] || [ ! -f /usr/local/lib/python2.7/dist-packages/ompl/app/_app.so ]
+#then
+#    OMPLPY_FOUND=0
+#else
+#    echo "OMPL geometric and OMPLapp 1.1.1 pybindings already installed!"
+#    OMPLPY_FOUND=1
+#fi
+
+#
+# methods to check for existence of system-installed binary/executable files:
+#
+#MOBILESIM_FOUND=`MobileSim --help | grep -m 1 "MobileSim 0.7.3" | wc -l`
+# MobileSim -- help should run binary file and return a string with 'MobileSim 0.7.3'
+# grep should find a match and repeat it
+# and wc -l should give 1 if ws4py 0.3.5 was found
+#if [ $MOBILESIM_FOUND -eq 1 ]; then
+#    echo "MobileSim 0.7.3 already installed!"
+#fi
+# can also find via: $ whereis MobileSim
+
+#
+# methods to check for existence of system-installed python packages with version number:
+#
+#WS4PY_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distribution('ws4py').version)" | grep -m 1 -o "0.3.5" | wc -l`
+# pkg_resources should give '0.3.5'
+# grep should find a match and repeat it
+# and wc -l should give 1 if ws4py 0.3.5 was found
+#if [ $WS4PY_FOUND -eq 1 ]; then
+#    echo "ws4py 0.3.5 already installed!"
+#fi
+# longer test from within python:
+# >>> from ws4py.client.threadedclient import WebSocketClient
+# >>> testclient = WebSocketClient('ws://localhost:9090/')
+
+#
+# methods to check for existence of system-installed python packages when version number is -NOT- set inside python:
+# (pkg_resources won't work)
+#
+#if [ ! -f /usr/local/lib/python2.7/dist-packages/Py_-1.0.0.egg-info ]; then
+#    PYPLUSPLUS_FOUND=0
+#else
+#    echo "pyplusplus 1.0.0 already installed!"
+#    PYPLUSPLUS_FOUND=1
+#fi
+# alt. method is:
+# this pipes stderr ("2>") to grep using ">()" and wc -l counts the number of lines
+#PYTHON_FINDS_PYPLUSPLUS=`python -c "import pyplusplus" 2> >(grep -m 1 -o "ImportError") | wc -l`
+# 0 if fine, 1 if get an ImportError
+#if [ $PYTHON_FINDS_PYPLUSPLUS -eq 0 ]
+#then
+#    echo "pyplusplus python libraries found by python!"
+#    PYPLUSPLUS_FOUND=1
+#else
+#    PYPLUSPLUS_FOUND=0
+#fi
+
+# --EOF--

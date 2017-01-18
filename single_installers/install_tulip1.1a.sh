@@ -15,6 +15,39 @@
 echo "Start of install_tulip1.1a.sh script!"
 
 #
+# find O/S codename
+# see: http://www.ros.org/reps/rep-0003.html
+#      http://www.unixtutorial.org/commands/lsb_release/
+#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+#
+#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+# cleaner version from ROS install instructions:
+UCODENAME=`lsb_release -sc`
+echo "Ubuntu version is: $UCODENAME"
+if [ $UCODENAME == "trusty" ]; then
+    ;
+elif [ $UCODENAME == "xenial" ]; then
+    ;
+else
+    echo "ERROR: Unknown Ubuntu version."
+    echo "Currently, install_deps.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Exiting."
+    exit
+fi
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
+# INPUT ARGUMENT PARSING:
+#
+
+#
 # get -f (force) if given
 #
 
@@ -48,14 +81,6 @@ then
     echo "tulip libraries already installed and up-to-date, exiting..."
     exit 0
 fi
-
-#
-# find path of this-script-being-run
-# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
-#
-RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
-echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
 # run installation + upgrades

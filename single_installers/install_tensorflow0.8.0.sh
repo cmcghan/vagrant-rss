@@ -12,6 +12,39 @@ echo "input arguments: [SCRIPTUSER] [FORCE (-f)]"
 echo "(note: order of [SCRIPTUSER] and -f argument can be swapped)"
 echo "(note: default SCRIPTUSER is \"vagrant\")"
 
+#
+# find O/S codename
+# see: http://www.ros.org/reps/rep-0003.html
+#      http://www.unixtutorial.org/commands/lsb_release/
+#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+#
+#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+# cleaner version from ROS install instructions:
+UCODENAME=`lsb_release -sc`
+echo "Ubuntu version is: $UCODENAME"
+if [ $UCODENAME == "trusty" ]; then
+    ;
+elif [ $UCODENAME == "xenial" ]; then
+    ;
+else
+    echo "ERROR: Unknown Ubuntu version."
+    echo "Currently, install_deps.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Exiting."
+    exit
+fi
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
+# INPUT ARGUMENT PARSING:
+#
+
 # set defaults for input arguments
 SCRIPTUSER=vagrant
 FORCE=
@@ -49,30 +82,7 @@ fi
 # check for installation
 #
 
-#MOBILESIM_FOUND=`MobileSim --help | grep -m 1 "MobileSim 0.7.3" | wc -l`
-#if [ $MOBILESIM_FOUND -eq 1 ]; then
-#    echo "MobileSim 0.7.3 already installed!"
-#fi
-# can also find via: $ whereis MobileSim
-
-#WS4PY_FOUND=`python -c "import pkg_resources; print(pkg_resources.get_distribution('ws4py').version)" | grep -m 1 -o "0.3.5" | wc -l`
-# pkg_resources should give '0.3.5'
-# grep should find a match and repeat it
-# and wc -l should give 1 if ws4py 0.3.5 was found
-#if [ $WS4PY_FOUND -eq 1 ]; then
-#    echo "ws4py 0.3.5 already installed!"
-#fi
-# longer test from within python:
-# >>> from ws4py.client.threadedclient import WebSocketClient
-# >>> testclient = WebSocketClient('ws://localhost:9090/')
-
-#
-# find path of this-script-being-run
-# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
-#
-RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
-echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+:
 
 #
 # run installation + upgrades

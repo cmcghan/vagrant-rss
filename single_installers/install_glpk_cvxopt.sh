@@ -15,9 +15,39 @@
 echo "Start of install_glpk_cvxopt.sh script!"
 
 #
-# get -f (force) if given
+# find O/S codename
+# see: http://www.ros.org/reps/rep-0003.html
+#      http://www.unixtutorial.org/commands/lsb_release/
+#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+#
+#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+# cleaner version from ROS install instructions:
+UCODENAME=`lsb_release -sc`
+echo "Ubuntu version is: $UCODENAME"
+if [ $UCODENAME == "trusty" ]; then
+    ;
+elif [ $UCODENAME == "xenial" ]; then
+    ;
+else
+    echo "ERROR: Unknown Ubuntu version."
+    echo "Currently, install_glpk_cvxopt.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Exiting."
+    exit
+fi
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
+# INPUT ARGUMENT PARSING:
 #
 
+# get -f (force) if given
 # if we get an input parameter (username) then use it, else use default 'vagrant'
 if [ $# -eq 1 ] && [ "$1" == "-f" ]
 then
@@ -60,14 +90,6 @@ then
 fi
 
 #
-# find path of this-script-being-run
-# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
-#
-RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
-echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
-
-#
 # run installation + upgrades
 #
 
@@ -83,7 +105,12 @@ cd initdeps
 
 # install glpk and cvxopt:
 sudo apt-get -y install curl # for curl use below
-sudo apt-get -y install python-numpy python-pyparsing python-scipy python-cvxopt python-networkx python-numpy-doc python-networkx-doc python-matplotlib python-matplotlib-data python-matplotlib-doc python-pydot graphviz graphviz-doc python-pygraphviz python-scitools
+sudo apt-get -y install python-numpy python-pyparsing python-scipy python-cvxopt python-networkx python-numpy-doc python-matplotlib python-matplotlib-data python-matplotlib-doc python-pydot graphviz graphviz-doc python-pygraphviz python-scitools
+if [ $UCODENAME == "trusty" ]; then
+    sudo apt-get -y install python-networkx-doc
+elif [ $UCODENAME == "xenial" ]; then # not installed / name wrong on 16.04: python-networkx-doc
+    :
+fi
 sudo apt-get -y install python-dev build-essential python-pip ipython ipython-notebook python-pandas python-sympy python-nose libblas-dev liblapack-dev gfortran python-glpk glpk-utils libglpk-dev libglpk36 swig libgmp3-dev
 sudo apt-get -y install python-ply
 #sudo apt-get -y install python-pip python-nose

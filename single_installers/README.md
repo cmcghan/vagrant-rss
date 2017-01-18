@@ -97,6 +97,6 @@ When code is modified or re-distributed, the LICENSE file should accompany the c
 Contact
 =======
 
-If you have any questions regarding the contents of this repository, please email Catharine McGhan at <cmcghan@cms.caltech.edu>.
+If you have any questions regarding the contents of this repository, please email Catharine McGhan at <cat.mcghan@uc.edu>.
 
 -EOF-

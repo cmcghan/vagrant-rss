@@ -26,6 +26,39 @@ echo "(note: default [SCRIPTUSER] is \"vagrant\")"
 # install python WebSocket library
 #
 
+#
+# find O/S codename
+# see: http://www.ros.org/reps/rep-0003.html
+#      http://www.unixtutorial.org/commands/lsb_release/
+#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
+#
+#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
+# cleaner version from ROS install instructions:
+UCODENAME=`lsb_release -sc`
+echo "Ubuntu version is: $UCODENAME"
+if [ $UCODENAME == "trusty" ]; then
+    ;
+elif [ $UCODENAME == "xenial" ]; then
+    ;
+else
+    echo "ERROR: Unknown Ubuntu version."
+    echo "Currently, install_rosstuf_setup_catkinworkspace.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Exiting."
+    exit
+fi
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
+# INPUT ARGUMENT PARSING:
+#
+
 # set defaults for input arguments
 ROSVERSION=
 SCRIPTUSER=vagrant
@@ -36,14 +69,7 @@ if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
 else # at least 1 (possibly 3) argument(s) at commandline...
-    # need to get O/S argument first, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
-    # see: http://www.ros.org/reps/rep-0003.html
-    #      http://www.unixtutorial.org/commands/lsb_release/
-    #      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
-    #UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
-    # cleaner version from ROS install instructions:
-    UCODENAME=`lsb_release -sc`
-    echo "Ubuntu version is: $UCODENAME"
+    # check against O/S argument, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
     echo "Commandline argument 1 is: $1"
     if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
         ROSVERSION="indigo"
@@ -106,14 +132,6 @@ fi
 # >>> testclient = WebSocketClient('ws://localhost:9090/')
 
 #
-# find path of this-script-being-run
-# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
-#
-RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$MY_PATH\" && pwd )`"
-echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
-
-#
 # run installation + upgrades
 #
 
@@ -158,6 +176,15 @@ elif [ "$ROSVERSION" -eq "jade" ]; then # install gazebo5, too
 elif [ "$ROSVERSION" -eq "kinetic" ]; then # install gazebo7, too
     sudo apt-get -y install gazebo7 libgazebo7-dev
 fi
+
+#
+#
+# *** !!! ***
+# need to install above in separate root-called script, because the rest-below basically needs non-root for install process
+# ...or should(??). I -really- need to fix this file...
+# *** !!! ***
+#
+#
 
 # note: this will install to the home directory of user $SCRIPTUSER
 # so, if this script is called as user 'vagrant'
