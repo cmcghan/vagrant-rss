@@ -14,6 +14,7 @@ Table of Contents
 * Post-install and/or Non-Vagrantbox Use
   * Native Ubuntu 14.04 install:
   * Native Ubuntu 16.04 install:
+  * Extras / New features:
   * Post-install updates to Vagrant VM:
 * License
 * Contact
@@ -151,9 +152,10 @@ Note that these install scripts (install_deps.sh, and the scripts in the single_
     sudo git clone https://github.com/cmcghan/vagrant-rss.git /vagrant
     cd /vagrant
     sudo su
-    ./install_deps.sh ROSVERSION SCRIPTUSER
+    ./install_all_rss_deps.sh ROSVERSION SCRIPTUSER
 
 where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant** if your username is vagrant and you want to set up the ROS catkin workspace inside your directory), and **ROSVERSION** is the ROS distro to install (either **indigo** or **jade**).
+
 
 Native Ubuntu 16.04 install:
 ----------------------------
@@ -163,9 +165,25 @@ Note that these install scripts (install_deps.sh, and the scripts in the single_
     sudo git clone -b ubuntu-16.04-xenial https://github.com/cmcghan/vagrant-rss.git /vagrant
     cd /vagrant
     sudo su
-    ./install_deps.sh ROSVERSION SCRIPTUSER
+    ./install_all_rss_deps.sh ROSVERSION SCRIPTUSER
 
 where **SCRIPTUSER** should be replaced with the name of your user account (e.g., **vagrant** if your username is vagrant and you want to set up the ROS catkin workspace inside your directory), and **ROSVERSION** is the ROS distro to install (**kinetic**).
+
+Extras / New features:
+----------------------
+
+If you want to specify a nonstandard location for the catkin workspace, then try:
+
+    ./install_all_rss_deps.sh ROSVERSION SCRIPTUSER WORKSPACEDIR
+
+where **WORKSPACEDIR** should be replaced with the abolsute path where you want the workspace to be (e.g., **/home/vagrant/my_workspace**). Note that the default path for the workspace will be **/home/SCRIPTUSER/catkin_ws**
+
+You also shouldn't have to clone the git repo into the root of the filesystem anymore; relative paths should now work for all bash script calls. Try:
+
+    cd ~
+    git clone https://github.com/cmcghan/vagrant-rss.git
+
+This should create a directory called "vagrant-rss" in your home directory. You can then either do a local install via **virtualenv** or use **sudo** to install everything system-wide via the usual commands.
 
 
 Post-install updates to Vagrant VM:
@@ -181,7 +199,7 @@ Inside the Vagrantbox, these scripts can be rerun post-setup, after the initial 
 
     cd /vagrant
     sudo su
-    ./install_deps.sh ROSVERSION vagrant -f
+    ./install_all_rss_deps.sh ROSVERSION vagrant -f
 
 where **ROSVERSION** is the ROS distro to reinstall (either **indigo** or **jade** or **kinetic**), and **-f** will force-reinstall the installed-from-source libraries.
 

@@ -14,11 +14,13 @@
 #
 
 echo "Start of install_deps.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [-f]"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
 echo "(note: optional input arguments in [])"
-echo "(note: order of [SCRIPTUSER] and -f argument can be swapped)"
 echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
-echo "(note: default SCRIPTUSER is \"vagrant\")"
+echo "(note: default [SCRIPTUSER] is \"vagrant\")"
+echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
+echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
+echo "WORKSPACEDIR must specify the absolute path of the directory"
 echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 #
@@ -56,14 +58,15 @@ echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 # set defaults for input arguments
 ROSVERSION=
-SCRIPTUSER="vagrant"
+SCRIPTUSER=vagrant
+WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
 FORCE=
 # if we get an input parameter (username) then use it, else use default 'vagrant'
 # get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
 if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
-else # at least 1 (possibly 3) argument(s) at commandline...
+else # at least 1 (possibly 4) argument(s) at commandline...
     # check against O/S argument, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
     echo "Commandline argument 1 is: $1"
     if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
@@ -78,30 +81,56 @@ else # at least 1 (possibly 3) argument(s) at commandline...
         echo "Exiting."
         exit
     fi
+    # older/original code follows, commented-out, can be removed:
+    #if [ "$1" == "indigo" ]; then
+    #    ROSVERSION=indigo
+    #elif [ "$1" == "jade" ]; then
+    #    ROSVERSION=jade
+    #else
+    #    echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
+    #    exit
+    #fi
     echo "ROS version is $ROSVERSION."
-    if [ $# -gt 1 ]; then # at least 2 (possibly more) arguments at commandline...
-        if [ "$2" == "-f" ]; then
+    if [ $# -lt 2 ]; then
+        echo "Single username not given as commandline argument. Using default of '$SCRIPTUSER'."
+    else # at least 2 (possibly more) arguments at commandline...
+        if [ "$2" == "-f" ]; then # -f is last argument at commandline...
             echo "-f (force) commandline argument given."
             FORCE=$2
-        else
-            echo "Username given as commandline argument."
-            SCRIPTUSER=$2
-        fi
-        if [ $# -gt 2 ]; then # at least 3 (possibly more) arguments at commandline...
-            if [ "$3" == "-f" ]; then
-                echo "-f (force) commandline argument given."
-                FORCE=$3
-            elif [ $SCRIPTUSER -eq "vagrant" ]; then
+            echo "Default user and workspace directory path will be used."
+        else # SCRIPTUSER should be argument #2
+            # but we need to / should check against the users that have home directories / can log in
+            HOMEDIRFORUSER_FOUND=`ls -1 /home | grep -m 1 -o "$2" | wc -l`
+            # grep should find a match and repeat it
+            # and wc -l should give 1 if argument #2 is a username that has a home directory associated with it
+            if [ $HOMEDIRFORUSER_FOUND -eq 1 ]; then
                 echo "Username given as commandline argument."
-                SCRIPTUSER=$3
-            else
-                echo "Username already set. Second argument ignored."
+                SCRIPTUSER=$2
+            else # already checked for a -f, and not a user... (note: WORKSPACEDIR not allowed to be given without SCRIPTUSER argument)
+                echo "Bad username given as commandline argument. Using default username."
+            fi
+            if [ $# -lt 3 ]; then
+                echo "Workspace not given as commandline argument. Using default of '$WORKSPACEDIR'."
+            else # at least 3 (possibly more) arguments at commandline...
+                if [ "$3" == "-f" ]; then # -f is last argument at commandline...
+                    echo "-f (force) commandline argument given."
+                    FORCE=$3
+                    echo "Default workspace directory path will be used."
+                else # WORKSPACEDIR should be argument #3
+                    echo "Workspace directory given as commandline argument."
+                    WORKSPACEDIR=$3
+                    if [ $# -gt 3 ] && [ "$4" == "-f" ]; then # at least 4 (possibly more) arguments at commandline...
+                        echo "-f (force) commandline argument given."
+                        FORCE=$4
+                    fi
+                fi
             fi
         fi
     fi
 fi
 echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
-if [ $FORCE -eq "-f" ]; then
+echo "Will be setting up catkin workspace under $WORKSPACEDIR..."
+if [ "$FORCE" -eq "-f" ]; then
     echo "Forcing install of all compiled-from-source components."
 fi
 
@@ -147,16 +176,25 @@ $ABSOLUTE_PATH/single_installers/install_tulip1.2.0.sh $FORCE
 # install recommended software for python development (python-pip already installed above)
 sudo apt-get -y install spyder geany python-dev build-essential dos2unix
 
-# install polytope library (if not already installed via tulip-1.2.0) (python-pip already installed above)
-sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx python-pip
-#sudo pip install polytope # won't force an upgrade if not installed before # current version in repo (0.1.1) has issues with numpy >= 1.10 (because of version string parsing in quickhull.py); note that polytope won't work properly with numpy <=1.5.9 (unique1d() instead of unique())
-sudo pip install --upgrade pip
-sudo pip install --upgrade numpy
-sudo pip install --upgrade scipy
+# install polytope library (if not already installed via tulip installer) (python-pip already installed above)
+#sudo apt-get -y install python-numpy python-scipy python-cvxopt python-networkx python-pip
+##sudo pip install polytope # won't force an upgrade if not installed before # current version in repo (0.1.1) has issues with numpy >= 1.10 (because of version string parsing in quickhull.py); note that polytope won't work properly with numpy <=1.5.9 (unique1d() instead of unique())
+#sudo pip install --upgrade pip
+#sudo pip install --upgrade numpy
+#sudo pip install --upgrade scipy
+#cd ~/initdeps
+#if [ ! -d polytope ]
+#then
+#    git clone https://github.com/tulip-control/polytope.git
+#    cd polytope
+#    sudo pip install . # pip install polytope from local download
+#fi
+#if [ "$FORCE" == "-f" ]
+#then
+#    sudo pip install --upgrade polytope # do this to force newest version of polytope (and other deps: numpy, scipy, cvxopt, networkx) to install (polytope 0.1.1 as of 2016-04-20)
+#fi
+
 cd ~/initdeps
-git clone https://github.com/tulip-control/polytope.git
-cd polytope
-sudo pip install . # pip install polytope from local download
 
 # directory should exist, but just to make sure...
 sudo -u $SCRIPTUSER mkdir -p /home/$SCRIPTUSER/catkin_ws/src
@@ -184,6 +222,10 @@ $ABSOLUTE_PATH/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSV
 # install python libraries for deliberative/pSulu-jpl-python:
 sudo apt-get -y install python-mpmath python-pip
 sudo pip install pulp
+if [ "$FORCE" == "-f" ]
+then
+    sudo pip install --upgrade pulp # do this to force newest version (and other deps) to install
+fi
 
 # install python libraries for deliberative/psulu_picard (doxygen installed above)
 #/vagrant/single_installers/install_ipopt.sh $FORCE

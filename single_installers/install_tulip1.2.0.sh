@@ -123,14 +123,17 @@ sudo pip install --upgrade pip
 sudo pip install --upgrade numpy
 sudo pip install --upgrade scipy
 cd ~/initdeps
-git clone https://github.com/tulip-control/polytope.git
-cd polytope
-sudo pip install . # pip install polytope from local download
-
+if [ ! -d polytope ]
+then
+    git clone https://github.com/tulip-control/polytope.git
+    cd polytope
+    sudo pip install . # pip install polytope from local download
+fi
 if [ "$FORCE" == "-f" ]
 then
     sudo pip install --upgrade polytope # do this to force newest version of polytope (and other deps: numpy, scipy, cvxopt, networkx) to install (polytope 0.1.1 as of 2016-04-20)
 fi
+
 cd ~/initdeps
 # if need to force, then remove old directory first
 if [ "$FORCE" == "-f" ]
