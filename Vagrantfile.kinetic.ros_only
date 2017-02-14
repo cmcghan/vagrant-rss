@@ -88,7 +88,7 @@ Vagrant.configure(2) do |config|
   # Windows you can still use PuTTY+Xming to see GUI windows pop-up
   
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--name"  , "rss_git_kinetic_development_machine"]
+    vb.customize ["modifyvm", :id, "--name"  , "rss_git_kinetic_development_machine_ros_only"]
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus"  , 2]
     vb.customize ["modifyvm", :id, "--chipset", "ich9"]
@@ -141,6 +141,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get -y install ubuntu-desktop
     # note that this increases the disk space necessary for the vbox by several GB
     
-    /vagrant/install_all_rss_deps.sh kinetic vagrant
+    #/vagrant/install_deps.sh kinetic vagrant
+	/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh kinetic ubuntu /home/ubuntu/catkin_ws
   SHELL
 end

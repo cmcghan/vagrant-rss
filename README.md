@@ -11,6 +11,7 @@ Table of Contents
   * For a ROS kinetic Vagrantbox:
   * Shutting down the Vagrant session:
   * Choice of access to VirtualBox:
+  * If you run into issues with vagrant ssh on Windows 10...
 * Post-install and/or Non-Vagrantbox Use
   * Native Ubuntu 14.04 install:
   * Native Ubuntu 16.04 install:
@@ -139,6 +140,24 @@ Now, to work as user "vagrant":
 * Wait for the user menu to come up, then select user "vagrant". Default password is the login name.
 
 You should now be logged into the VirtualBox VM as user "vagrant".
+
+If you run into issues with vagrant ssh on Windows 10...
+--------------------------------------------------------
+
+If you try running `vagrant ssh` and get the following error message in your terminal:
+
+    `ssh` executable not found in any directories in the %PATH% variable.
+
+Then try the following at the commandline:
+
+    set PATH=%PATH%;'C:\Program Files\Git\usr\bin'
+
+If you want to make this change permanent, -carefully- perform the following:
+* Go to Control Panel-> Security->System and left-click on the link 'Advanced System Settings' in the left toolbar.
+* Go to the 'Advanced' tab, then left-click the 'Environment Variables...' button at the bottom of the tab.
+* Under 'System Variables' (the lower box), left-click on 'Path' and then left-click on the 'Edit...' button.
+* Be careful when you edit this! Click on the 'New' button, add an entry for `C:\Program Files\Git\usr\bin` and hit the enter key. The text should end up at the bottom of the list (which you want).
+* Exit out of all dialog boxes.
 
 
 Post-install and/or Non-Vagrantbox Use
