@@ -188,4 +188,7 @@ source ./install_uwsim_ros.sh
 # install USARSimROS + libraries
 source ./install_usarsim_ros.sh
 
+# install CRUMBproject + libraries and dependencies
+source ./install_crumb_ros.sh
+
 echo "End of install_rosstuff_setup_catkinworkspace.sh script!"
