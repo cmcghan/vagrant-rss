@@ -49,15 +49,7 @@ echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 #
 # find/set the input arguments to environmental vars:
 #
-source $ABSOLUTE_PATH/get_rv_su_wd_f.sh $1 $2 $3 $4
-
-if [ $# -lt 1 ]; then
-    echo "ERROR: No ROS version given as commandline argument. Exiting."
-exit
-
-    
-    
-    
+source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
     
 #
 # check for installation
