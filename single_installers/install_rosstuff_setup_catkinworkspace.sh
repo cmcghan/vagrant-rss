@@ -47,7 +47,7 @@ ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
-# find/set the input arguments to environmental vars:
+# parse input vars (set to appropriate vars or default vars)
 #
 source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
     
