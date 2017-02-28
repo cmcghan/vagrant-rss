@@ -25,12 +25,16 @@
 #    top-level script
 # see: http://stackoverflow.com/questions/9772036/pass-all-variables-from-one-shellscript-to-another
 
-echo "Start of get_rv_su_wd_f.sh script!"
-echo "sets ROSVERSION, SCRIPTUSER, WORKSPACEDIR, FORCE environment variable for a script 'source'ing it"
-
-#
-# parse input vars (set to appropriate vars or default vars)
-#
+echo "(Start of get_rv_su_wd_f.sh script!)"
+echo "(sets ROSVERSION, SCRIPTUSER, WORKSPACEDIR, FORCE environment variable for a script 'source'ing it)"
+echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
+echo "(note: optional input arguments in [])"
+echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
+echo "(note: default [SCRIPTUSER] is \"vagrant\")"
+echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
+echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
+echo "WORKSPACEDIR must specify the absolute path of the directory"
+echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 #
 # INPUT ARGUMENT PARSING:
