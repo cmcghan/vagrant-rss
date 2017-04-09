@@ -8,14 +8,6 @@
 #
 
 echo "Start of install_uwsim_ros.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
-echo "(note: optional input arguments in [])"
-echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
-echo "(note: default [SCRIPTUSER] is \"vagrant\")"
-echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
-echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
-echo "WORKSPACEDIR must specify the absolute path of the directory"
-echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 # find O/S codename (set to UCODENAME)
 source ./get_os_codename.sh
@@ -29,20 +21,10 @@ ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
-# INPUT ARGUMENT PARSING:
+# parse input vars (set to appropriate vars or default vars)
 #
-
-# set defaults for input arguments
-ROSVERSION=
-SCRIPTUSER=vagrant
-WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
-FORCE=
-
-
-
-
-
-
+source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
+# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORSPACEDIR FORCE
 
 
 #
@@ -55,9 +37,9 @@ sudo apt-get -y upgrade
 
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
-# install UWSim stuff
-cd /home/$SCRIPTUSER/catkin_ws/src
-sudo apt-get -y install python-urlgrabber ros-indigo-uwsim libdc1394-22 libdc1394-22-dev libdc1394-utils
+# install UWSim stuff -- tested in indigo only!
+cd $WORSPACEDIR/src
+sudo apt-get -y install python-urlgrabber ros-$ROSVERSION-uwsim libdc1394-22 libdc1394-22-dev libdc1394-utils
 if [ "$FORCE" == "-f" ]; then
     rm -rf freefloating_gazebo
     rm -rf freefloating_gazebo_demo
@@ -68,7 +50,10 @@ fi
 if [ ! -d freefloating_gazebo_demo ]; then
     sudo -u $SCRIPTUSER git clone https://github.com/freefloating-gazebo/freefloating_gazebo_demo
 fi
-su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd /home/$SCRIPTUSER/catkin_ws; source /opt/ros/$ROSVERSION/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
+#su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORSPACEDIR; source /opt/ros/$ROSVERSION/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
+#now, catkin_make this bad boy! :)
+su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; /opt/ros/$ROSVERSION/bin/catkin_make;"
+
 # set up demo for the first time:
 #0$ cd ~/catkin_ws && source devel/setup.bash && roscore # is this necessary?
 #1$ cd ~/catkin_ws && source devel/setup.bash

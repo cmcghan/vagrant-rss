@@ -8,14 +8,6 @@
 #
 
 echo "Start of install_turtlebot_ros.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
-echo "(note: optional input arguments in [])"
-echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
-echo "(note: default [SCRIPTUSER] is \"vagrant\")"
-echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
-echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
-echo "WORKSPACEDIR must specify the absolute path of the directory"
-echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 # find O/S codename (set to UCODENAME)
 source ./get_os_codename.sh
@@ -29,20 +21,10 @@ ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
 #
-# INPUT ARGUMENT PARSING:
+# parse input vars (set to appropriate vars or default vars)
 #
-
-# set defaults for input arguments
-ROSVERSION=
-SCRIPTUSER=vagrant
-WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
-FORCE=
-
-
-
-
-
-
+source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
+# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORSPACEDIR FORCE
 
 
 #
@@ -64,7 +46,7 @@ if [ "$ROSVERSION" -eq "indigo" ]; then
     # sudo apt-get -y install ros-indigo-kobuki-ftdi ros-indigo-rocon-remocon # look like they may be included as auto-dependencies? need to check
     # sudo apt-get -y ros-indigo-rocon-qt-library ros-indigo-ar-track-alvar-msgs # look like they may be included as auto-dependencies? need to check
 elif [ "$ROSVERSION" -eq "jade" ]; then
-    cd /home/$SCRIPTUSER/catkin_ws/src
+    cd $WORKSPACEDIR/src
     if [ "$FORCE" == "-f" ]; then
         rm -rf turtlebot
         rm -rf turtlebot_interactions
@@ -141,7 +123,7 @@ elif [ "$ROSVERSION" -eq "kinetic" ]; then
     # said-also-required from: http://wiki.ros.org/turtlebot/Tutorials/indigo/Debs%20Installation
     # sudo apt-get -y ros-$ROSVERSION-rocon-qt-library ros-$ROSVERSION-ar-track-alvar-msgs # not included as auto-dependencies above
     # latter is handled by specific package install below
-    cd /home/$SCRIPTUSER/catkin_ws/src
+    cd $WORKSPACEDIR/src
     if [ "$FORCE" == "-f" ]; then
         #rm -rf rocon_qt_gui
         #rm -rf 0.7-indigo
@@ -181,7 +163,8 @@ elif [ "$ROSVERSION" -eq "kinetic" ]; then
     fi
 fi
 
-
+#now, catkin_make this bad boy! :)
+su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; /opt/ros/$ROSVERSION/bin/catkin_make;"
 
 
 

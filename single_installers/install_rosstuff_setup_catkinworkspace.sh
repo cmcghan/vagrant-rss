@@ -26,14 +26,6 @@
 # see: http://stackoverflow.com/questions/9772036/pass-all-variables-from-one-shellscript-to-another
 
 echo "Start of install_rosstuff_setup_catkinworkspace.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
-echo "(note: optional input arguments in [])"
-echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
-echo "(note: default [SCRIPTUSER] is \"vagrant\")"
-echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
-echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
-echo "WORKSPACEDIR must specify the absolute path of the directory"
-echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
 # find O/S codename (set to UCODENAME)
 source ./get_os_codename.sh
@@ -50,7 +42,9 @@ echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 # parse input vars (set to appropriate vars or default vars)
 #
 source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
-    
+# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORSPACEDIR FORCE
+
+
 #
 # check for installation
 #
@@ -68,10 +62,10 @@ sudo apt-get -y upgrade
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
 # install ROS indigo OR jade OR kinetic (for "ubuntu/trusty64" box)
-source $ABSOLUTE_PATH/install_appropriate_ros_version.sh
+$ABSOLUTE_PATH/install_appropriate_ros_version.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install gazebo and gazebo-ros packages
-source $ABSOLUTE_PATH/install_gazebo_plus_rospkgs.sh
+$ABSOLUTE_PATH/install_gazebo_plus_rospkgs.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # note: this will install to the home directory of user $SCRIPTUSER
 # so, if this script is called as user 'vagrant'
@@ -80,13 +74,13 @@ source $ABSOLUTE_PATH/install_gazebo_plus_rospkgs.sh
 # (technically /home/vagrant/catkin_ws and catkin_ws/src
 
 # directory should exist, but just to make sure...
-sudo -u $SCRIPTUSER mkdir -p /home/$SCRIPTUSER/catkin_ws/src
+sudo -u $SCRIPTUSER mkdir -p $WORSPACEDIR/src
 
 # remove devel and build directories if exist already (want to catkin_make from scratch)
 if [ "$FORCE" == "-f" ]
 then
-    rm -rf /home/$SCRIPTUSER/catkin_ws/devel
-    rm -rf /home/$SCRIPTUSER/catkin_ws/build
+    rm -rf $WORSPACEDIR/devel
+    rm -rf $WORSPACEDIR/build
 fi
 
 # install gnome-terminal for multiscript*.py runs
@@ -96,30 +90,30 @@ sudo apt-get -y install gnome-terminal
 sudo apt-get -y install ros-$ROSVERSION-rosbridge-server
 
 # install turtlebot libraries
-source $ABSOLUTE_PATH/install_turtlebot_ros.sh
+$ABSOLUTE_PATH/install_turtlebot_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install (SD-Robot-Vision / ua_ros_p3dx) libraries for ./rss_git/contrib/p3dx_gazebo_mod
-source $ABSOLUTE_PATH/install_p3dx_ros.sh
+$ABSOLUTE_PATH/install_p3dx_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # set up catkin workspace
-source $ABSOLUTE_PATH/set_up_catkin_workspace.sh
+$ABSOLUTE_PATH/set_up_catkin_workspace.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install ROSARIA (reference: http://wiki.ros.org/ROSARIA/Tutorials/How%20to%20use%20ROSARIA )
-source $ABSOLUTE_PATH/install_ROSARIA.sh
+$ABSOLUTE_PATH/install_ROSARIA.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install deps for MobileSim and MobileSim (references: http://robots.mobilerobots.com/wiki/MobileSim and http://robots.mobilerobots.com/MobileSim/download/current/README.html )
-source $ABSOLUTE_PATH/install_MobileSim.sh
+$ABSOLUTE_PATH/install_MobileSim.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install python WebSocket library (reference: https://ws4py.readthedocs.org/en/latest/sources/install/ )
-source $ABSOLUTE_PATH/install_ws4py.sh
+$ABSOLUTE_PATH/install_ws4py.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install UWSim stuff
-source $ABSOLUTE_PATH/install_uwsim_ros.sh
+$ABSOLUTE_PATH/install_uwsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install USARSimROS + libraries
-source $ABSOLUTE_PATH/install_usarsim_ros.sh
+$ABSOLUTE_PATH/install_usarsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install CRUMBproject + libraries and dependencies
-source $ABSOLUTE_PATH/install_crumb_ros.sh
+$ABSOLUTE_PATH/install_crumb_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 echo "End of install_rosstuff_setup_catkinworkspace.sh script!"

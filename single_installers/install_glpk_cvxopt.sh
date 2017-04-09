@@ -17,26 +17,8 @@ echo "input arguments: [-f]"
 echo "(note: optional input arguments in [])"
 echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
-#
-# find O/S codename
-# see: http://www.ros.org/reps/rep-0003.html
-#      http://www.unixtutorial.org/commands/lsb_release/
-#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
-#
-#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
-# cleaner version from ROS install instructions:
-UCODENAME=`lsb_release -sc`
-echo "Ubuntu version is: $UCODENAME"
-if [ $UCODENAME == "trusty" ]; then
-    ;
-elif [ $UCODENAME == "xenial" ]; then
-    ;
-else
-    echo "ERROR: Unknown Ubuntu version."
-    echo "Currently, install_glpk_cvxopt.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
-    echo "Exiting."
-    exit
-fi
+# find O/S codename (set to UCODENAME)
+source ./get_os_codename.sh
 
 #
 # find path of this-script-being-run

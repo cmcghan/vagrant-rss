@@ -27,12 +27,12 @@ set(CMAKE_LIBRARY_ARCHITECTURE "x86_64-linux-gnu")
 set(BOOST_INCLUDEDIR /usr/include)
 set(BOOST_LIBRARYDIR /usr/lib/x86_64-linux-gnu)
 ```
-Also add the above lines to ompl/CMakeLists.txt at line 6 (below `project(omplapp CXX C)`):
+Also add the above lines to ompl/CMakeLists.txt at line 6 (below `project(omplapp CXX C)`), using:
 ```
     gedit ompl/CMakeLists.txt
 ```
 
-Then run the following commands:
+Once you've added those lines, too, run the following commands:
 ```
     cd build/Release
     cmake ../..

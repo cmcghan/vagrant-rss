@@ -36,6 +36,9 @@ echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
 echo "WORKSPACEDIR must specify the absolute path of the directory"
 echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
+# find O/S codename (set to UCODENAME)
+source ./get_os_codename.sh
+
 #
 # INPUT ARGUMENT PARSING:
 #
