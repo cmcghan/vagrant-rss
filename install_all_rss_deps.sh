@@ -14,35 +14,7 @@
 #
 
 echo "Start of install_deps.sh script!"
-echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
-echo "(note: optional input arguments in [])"
-echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
-echo "(note: default [SCRIPTUSER] is \"vagrant\")"
-echo "(note: SCRIPTUSER must be given as an argument for WORKSPACEDIR to be read and accepted from commandline)"
-echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
-echo "WORKSPACEDIR must specify the absolute path of the directory"
-echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
-
-#
-# find O/S codename
-# see: http://www.ros.org/reps/rep-0003.html
-#      http://www.unixtutorial.org/commands/lsb_release/
-#      http://unix.stackexchange.com/questions/104881/remove-particular-characters-from-a-variable-using-bash
-#
-#UCODENAME=`lsb_release -c | sed 's/Codename:\t//g'`
-# cleaner version from ROS install instructions:
-UCODENAME=`lsb_release -sc`
-echo "Ubuntu version is: $UCODENAME"
-if [ $UCODENAME == "trusty" ]; then
-    ;
-elif [ $UCODENAME == "xenial" ]; then
-    ;
-else
-    echo "ERROR: Unknown Ubuntu version."
-    echo "Currently, install_deps.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
-    echo "Exiting."
-    exit
-fi
+#echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
 
 #
 # find path of this-script-being-run
@@ -52,87 +24,14 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-#
-# INPUT ARGUMENT PARSING:
-#
+# find O/S codename (set to UCODENAME)
+source $ABSOLUTE_PATH/single_installers/get_os_codename.sh
 
-# set defaults for input arguments
-ROSVERSION=
-SCRIPTUSER=vagrant
-WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
-FORCE=
-# if we get an input parameter (username) then use it, else use default 'vagrant'
-# get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
-if [ $# -lt 1 ]; then
-    echo "ERROR: No ROS version given as commandline argument. Exiting."
-    exit
-else # at least 1 (possibly 4) argument(s) at commandline...
-    # check against O/S argument, kinetic does not demand support for 14.04, or indigo/jade for 16.04...
-    echo "Commandline argument 1 is: $1"
-    if [ $1 == "indigo" ] && [ $UCODENAME == "trusty" ]; then
-        ROSVERSION="indigo"
-    elif [ $1 == "jade" ] && [ $UCODENAME == "trusty" ]; then
-        ROSVERSION="jade"
-    elif [ $1 == "kinetic" ] && [ $UCODENAME == "xenial" ]; then
-        ROSVERSION="kinetic"
-    else
-        echo "ERROR: Unknown ROS version given as commandline argument -or- ROS version does not match O/S."
-        echo "Currently, install_deps.sh supports trusty with indigo and jade only, xenial with kinetic only."
-        echo "Exiting."
-        exit
-    fi
-    # older/original code follows, commented-out, can be removed:
-    #if [ "$1" == "indigo" ]; then
-    #    ROSVERSION=indigo
-    #elif [ "$1" == "jade" ]; then
-    #    ROSVERSION=jade
-    #else
-    #    echo "ERROR: Unknown ROS version given as commandline argument. Exiting."
-    #    exit
-    #fi
-    echo "ROS version is $ROSVERSION."
-    if [ $# -lt 2 ]; then
-        echo "Single username not given as commandline argument. Using default of '$SCRIPTUSER'."
-    else # at least 2 (possibly more) arguments at commandline...
-        if [ "$2" == "-f" ]; then # -f is last argument at commandline...
-            echo "-f (force) commandline argument given."
-            FORCE=$2
-            echo "Default user and workspace directory path will be used."
-        else # SCRIPTUSER should be argument #2
-            # but we need to / should check against the users that have home directories / can log in
-            HOMEDIRFORUSER_FOUND=`ls -1 /home | grep -m 1 -o "$2" | wc -l`
-            # grep should find a match and repeat it
-            # and wc -l should give 1 if argument #2 is a username that has a home directory associated with it
-            if [ $HOMEDIRFORUSER_FOUND -eq 1 ]; then
-                echo "Username given as commandline argument."
-                SCRIPTUSER=$2
-            else # already checked for a -f, and not a user... (note: WORKSPACEDIR not allowed to be given without SCRIPTUSER argument)
-                echo "Bad username given as commandline argument. Using default username."
-            fi
-            if [ $# -lt 3 ]; then
-                echo "Workspace not given as commandline argument. Using default of '$WORKSPACEDIR'."
-            else # at least 3 (possibly more) arguments at commandline...
-                if [ "$3" == "-f" ]; then # -f is last argument at commandline...
-                    echo "-f (force) commandline argument given."
-                    FORCE=$3
-                    echo "Default workspace directory path will be used."
-                else # WORKSPACEDIR should be argument #3
-                    echo "Workspace directory given as commandline argument."
-                    WORKSPACEDIR=$3
-                    if [ $# -gt 3 ] && [ "$4" == "-f" ]; then # at least 4 (possibly more) arguments at commandline...
-                        echo "-f (force) commandline argument given."
-                        FORCE=$4
-                    fi
-                fi
-            fi
-        fi
-    fi
-fi
-echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
-echo "Will be setting up catkin workspace under $WORKSPACEDIR..."
-if [ "$FORCE" -eq "-f" ]; then
-    echo "Forcing install of all compiled-from-source components."
-fi
+#
+# parse input vars (set to appropriate vars or default vars)
+#
+source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
+# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORKSPACEDIR FORCE
 
 #
 # run installation + upgrades
@@ -197,10 +96,10 @@ sudo apt-get -y install spyder geany python-dev build-essential dos2unix
 cd ~/initdeps
 
 # directory should exist, but just to make sure...
-sudo -u $SCRIPTUSER mkdir -p /home/$SCRIPTUSER/catkin_ws/src
+sudo -u $SCRIPTUSER mkdir -p $WORKSPACEDIR/src
 
 # just in case, fix ownership of /home/$SCRIPTUSER/catkin_ws/src
-sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/catkin_ws
+sudo chown -R $SCRIPTUSER:$SCRIPTUSER $WORKSPACEDIR
 
 # install gnome-terminal for multiscript*.py runs
 # install rosbridge
@@ -211,7 +110,7 @@ sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/catkin_ws
 # install deps for MobileSim and MobileSim
 # install python WebSocket library
 #/vagrant/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
-$ABSOLUTE_PATH/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $FORCE
+$ABSOLUTE_PATH/single_installers/install_rosstuff_setup_catkinworkspace.sh $ROSVERSION $SCRIPTUSER $WORKSPACEDIR $FORCE
 
 # OMPL install moved to bottom of file due to possible installation issues under some circumstances
 

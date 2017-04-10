@@ -8,9 +8,7 @@
 #
 
 echo "Start of install_ROSARIA.sh script!"
-
-# find O/S codename (set to UCODENAME)
-source ./get_os_codename.sh
+#echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
 
 #
 # find path of this-script-being-run
@@ -20,11 +18,14 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
+# find O/S codename (set to UCODENAME)
+source $ABSOLUTE_PATH/get_os_codename.sh
+
 #
 # parse input vars (set to appropriate vars or default vars)
 #
 source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
-# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORSPACEDIR FORCE
+# when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORKSPACEDIR FORCE
 
 
 #

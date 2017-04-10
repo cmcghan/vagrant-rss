@@ -27,6 +27,7 @@
 
 echo "Start of get_os_codename.sh script!"
 echo "sets UCODENAME environment variable for a script 'source'ing it"
+#echo "
 
 #
 # find O/S codename (set to UCODENAME)

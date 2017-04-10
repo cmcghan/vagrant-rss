@@ -36,8 +36,16 @@ echo "(note: default [WORKSPACEDIR] is \"/home/\$SCRIPTUSER/catkin_ws\")"
 echo "WORKSPACEDIR must specify the absolute path of the directory"
 echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
 
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
 # find O/S codename (set to UCODENAME)
-source ./get_os_codename.sh
+source $ABSOLUTE_PATH/get_os_codename.sh
 
 #
 # INPUT ARGUMENT PARSING:
