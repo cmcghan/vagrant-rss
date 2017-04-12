@@ -27,7 +27,6 @@
 
 echo "Start of get_os_codename.sh script!"
 echo "sets UCODENAME environment variable for a script 'source'ing it"
-#echo "
 
 #
 # find O/S codename (set to UCODENAME)
@@ -39,15 +38,16 @@ echo "sets UCODENAME environment variable for a script 'source'ing it"
 # cleaner version from ROS install instructions:
 UCODENAME=`lsb_release -sc`
 echo "Ubuntu version is: $UCODENAME"
-if [ $UCODENAME == "trusty" ]; then
-    ;
-elif [ $UCODENAME == "xenial" ]; then
-    ;
+if [ $UCODENAME == "trusty" ]; then # do-nothing
+    : # null command
+elif [ $UCODENAME == "xenial" ]; then # do-nothing
+    : # null command
 else
     echo "ERROR: Unknown Ubuntu version."
-    echo "Currently, install_rosstuf_setup_catkinworkspace.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Currently, install_rosstuff_setup_catkinworkspace.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
     echo "Exiting."
     exit
 fi
+echo "*** Will be using UCODENAME=$UCODENAME"
 
 echo "End of get_os_codename.sh script!"
