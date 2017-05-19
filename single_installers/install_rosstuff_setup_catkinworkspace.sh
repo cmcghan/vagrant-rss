@@ -36,9 +36,6 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
@@ -57,8 +54,7 @@ source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
@@ -109,12 +105,21 @@ $ABSOLUTE_PATH/install_MobileSim.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 $ABSOLUTE_PATH/install_ws4py.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install UWSim stuff
-$ABSOLUTE_PATH/install_uwsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+#$ABSOLUTE_PATH/install_uwsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install USARSimROS + libraries
-$ABSOLUTE_PATH/install_usarsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+#$ABSOLUTE_PATH/install_usarsim_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 # install CRUMBproject + libraries and dependencies
-$ABSOLUTE_PATH/install_crumb_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+#$ABSOLUTE_PATH/install_crumb_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+
+# install hector_quadrotor + libraries and dependencies
+#$ABSOLUTE_PATH/install_hector_quadrotor.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+
+# install SURF 2016 libraries and dependencies
+#$ABSOLUTE_PATH/install_SURF2016_deps.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
+
+# install WidowX stuff + libraries and dependencies
+#$ABSOLUTE_PATH/install_widowx_ros.sh $ROSVERSION $SCRIPTUSER $WORSPACEDIR $FORCE
 
 echo "End of install_rosstuff_setup_catkinworkspace.sh script!"

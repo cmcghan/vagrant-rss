@@ -18,9 +18,6 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
@@ -41,9 +38,5 @@ su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR/src; sou
 #sudo -u $SCRIPTUSER echo "source /home/$SCRIPTUSER/catkin_ws/devel/setup.bash" >> /home/$SCRIPTUSER/.bashrc
 # uncomment out the following line if you get access errors (to fix ownership rights):
 #sudo chown -R $SCRIPTUSER:$SCRIPTUSER /home/$SCRIPTUSER/.bashrc
-
-
-
-
 
 echo "End of set_up_catkin_workspace.sh script!"

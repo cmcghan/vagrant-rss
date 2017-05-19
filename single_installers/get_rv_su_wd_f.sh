@@ -25,8 +25,9 @@
 #    top-level script
 # see: http://stackoverflow.com/questions/9772036/pass-all-variables-from-one-shellscript-to-another
 
-echo "(Start of get_rv_su_wd_f.sh script!)"
+echo "Start of get_rv_su_wd_f.sh script!"
 echo "(sets ROSVERSION, SCRIPTUSER, WORKSPACEDIR, FORCE environment variable for a script 'source'ing it)"
+echo "(if 'source'd, this script will also return UCODENAME as an environment variable)"
 echo "input arguments: ROSVERSION [SCRIPTUSER] [WORKSPACEDIR] [-f]"
 echo "(note: optional input arguments in [])"
 echo "(note: there is no default ROSVERSION. Acceptable inputs are: indigo jade kinetic)"
@@ -40,12 +41,39 @@ echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source 
 # find path of this-script-being-run
 # see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
 #
-RELATIVE_PATH="`dirname \"$0\"`"
-ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
-echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+#RELATIVE_PATH2="`dirname \"$0\"`"
+#ABSOLUTE_PATH2="`( cd \"$RELATIVE_PATH2\" && pwd )`"
+#echo "PATH of current script ($0) is: $ABSOLUTE_PATH2"
 
 # find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
+#source $ABSOLUTE_PATH2/get_os_codename.sh
+
+# source'ing this script overwrites $0 -- in other words, the call of the script itself
+# we can't assume that get_os_codename.sh has been run prior to this script, unfortunately
+# ...so, copy the contents of get_os_codename.sh inside this script, so that this script
+# doesn't depend on anything external to it!
+
+#
+# copy-paste of contents of get_os_codename.sh script
+#
+
+UCODENAME=`lsb_release -sc`
+echo "Ubuntu version is: $UCODENAME"
+if [ $UCODENAME == "trusty" ]; then # do-nothing
+    : # null command
+elif [ $UCODENAME == "xenial" ]; then # do-nothing
+    : # null command
+else
+    echo "ERROR: Unknown Ubuntu version."
+    echo "Currently, install_rosstuff_setup_catkinworkspace.sh supports Ubuntu 14.04 trusty and Ubuntu 16.04 xenial only."
+    echo "Exiting."
+    exit
+fi
+echo "*** Will be using UCODENAME=$UCODENAME"
+
+#
+# done with copy-paste of contents of get_os_codename.sh script
+#
 
 #
 # INPUT ARGUMENT PARSING:
@@ -57,7 +85,7 @@ SCRIPTUSER=vagrant
 WORKSPACEDIR="/home/$SCRIPTUSER/catkin_ws"
 FORCE=
 # if we get an input parameter (username) then use it, else use default 'vagrant'
-# get -f (force) if given -- NOTE: WILL -NOT- REMOVE OR FORCE-REINSTALL ROSARIA!!!
+# get -f (force) if given
 if [ $# -lt 1 ]; then
     echo "ERROR: No ROS version given as commandline argument. Exiting."
     exit
@@ -117,7 +145,7 @@ else # at least 1 (possibly 4) argument(s) at commandline...
 fi
 echo "Will be using user $SCRIPTUSER and directories at and under /home/$SCRIPTUSER..."
 echo "Will be setting up catkin workspace under $WORKSPACEDIR..."
-if [ "$FORCE" -eq "-f" ]; then
+if [ "$FORCE" == "-f" ]; then
     echo "Forcing install of all compiled-from-source components."
 fi
 

@@ -79,8 +79,7 @@ fi
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 # start in the /root directory
 cd ~

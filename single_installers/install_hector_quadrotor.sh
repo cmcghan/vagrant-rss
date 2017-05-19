@@ -18,16 +18,15 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
 source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
 # when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORKSPACEDIR FORCE
 
-
+#
+# check for installation
+#
 
 # if ROS isn't already installed:
 if [ ! -f /opt/ros/$ROSVERSION/setup.bash ]; then # install the appropriate version of ROS
@@ -42,14 +41,25 @@ if [ ! -d $WORKSPACEDIR ]; then # set up the catkin workspace
     $ABSOLUTE_PATH/set_up_catkin_workspace.sh $ROSVERSION $SCRIPTUSER $WORKSPACEDIR $FORCE
 fi
 
+#
+# run installation + upgrades
+#
 
+# update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
+$ABSOLUTE_PATH/apt_upd_sys.sh
+
+# start in the /root directory
+cd ~
+# make and move into directory for holding compilation files + downloads
+#mkdir -p initdeps
+#cd initdeps
 
 cd $WORKSPACEDIR/src
-if [ "$ROSVERSION" -eq "indigo" ]; then
+if [ "$ROSVERSION" == "indigo" ]; then
     sudo apt-get -y install ros-$ROSVERSION-hector-quadrotor-demo
-elif [ "$ROSVERSION" -eq "jade" ]; then # jade is untested
+elif [ "$ROSVERSION" == "jade" ]; then # jade is untested
     sudo apt-get -y install ros-$ROSVERSION-hector-quadrotor-demo
-elif [ "$ROSVERSION" -eq "kinetic" ]; then
+elif [ "$ROSVERSION" == "kinetic" ]; then
     #sudo apt-get -y install ros-kinetic-hector-quadrotor-demo
     #sudo apt-get -y install ros-kinetic-hector-quadrotor-description ros-kinetic-hector-quadrotor-gazebo ros-kinetic-hector-quadrotor-teleop ros-kinetic-hector-quadrotor-gazebo-plugins
     sudo apt-get -y install ros-$ROSVERSION-hector-localization ros-$ROSVERSION-hector-gazebo ros-$ROSVERSION-hector-models ros-$ROSVERSION-hector-slam
@@ -88,7 +98,7 @@ elif [ "$ROSVERSION" -eq "kinetic" ]; then
 fi
 
 #now, catkin_make this bad boy! :)
-su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; /opt/ros/$ROSVERSION/bin/catkin_make;"
+su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; source /opt/ros/$ROSVERSION/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
 
 
 

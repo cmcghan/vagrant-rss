@@ -18,9 +18,6 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
@@ -33,8 +30,7 @@ source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
@@ -44,9 +40,9 @@ mkdir -p initdeps
 cd ~/initdeps
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt-get -y update
-if [ "$ROSVERSION" -eq "indigo" ]; then # install gazebo2, too
+if [ "$ROSVERSION" == "indigo" ]; then # install gazebo2, too
     sudo apt-get -y install gazebo2 gazebo2-dbg ros-$ROSVERSION-gazebo-ros
-elif [ "$ROSVERSION" -eq "jade" ]; then # install gazebo5, too
+elif [ "$ROSVERSION" == "jade" ]; then # install gazebo5, too
     sudo apt-get -y install gazebo5 libgazebo5-dev
     # set up gazebo 5.1 via:
     sudo cp -r /usr/share/gazebo-5.0/media /usr/share/gazebo-5.1/
@@ -56,7 +52,7 @@ elif [ "$ROSVERSION" -eq "jade" ]; then # install gazebo5, too
     #source /usr/share/gazebo-5.1/setup.sh 
     #gazebo --verbose
     # ...and then grab all the models from online that you want!
-elif [ "$ROSVERSION" -eq "kinetic" ]; then # install gazebo7, too
+elif [ "$ROSVERSION" == "kinetic" ]; then # install gazebo7, too
     sudo apt-get -y install gazebo7 libgazebo7-dev
 fi
 

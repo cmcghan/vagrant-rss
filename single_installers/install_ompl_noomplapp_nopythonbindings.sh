@@ -3,6 +3,54 @@
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 
+echo "Start of install_ompl_noomplapp_nopythonbindings.sh script!"
+echo "input arguments: [-f]"
+echo "(note: optional input arguments in [])"
+echo "-f sets FORCE=-f and will force a (re)install of all compiled-from-source components."
+
+#
+# find path of this-script-being-run
+# see: http://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script
+#
+RELATIVE_PATH="`dirname \"$0\"`"
+ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
+echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
+
+#
+# INPUT ARGUMENT PARSING:
+#
+
+# get -f (force) if given
+if [ $# -eq 1 ] && [ "$1" == "-f" ]; then
+    echo "-f (force) commandline argument given. Forcing install of all compiled-from-source components."
+    FORCE=$1
+else
+    FORCE=
+fi
+
+#
+# check for installation
+#
+
+# see ./templates_/bash-script-commands-for-checking-version-numbers-of-installed-stuff.txt for examples
+
+# exit script immediately if libraries are already installed
+#if [ "$FORCE" != "-f" ] && [ $SOMETHING_FOUND -eq 1 ]
+#then
+#    echo "SOMETHING libraries already installed and up-to-date, exiting..."
+#    exit 0
+#fi
+
+#
+# run installation + upgrades
+#
+
+# update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
+$ABSOLUTE_PATH/apt_upd_sys.sh
+
+# start in the /root directory
+cd ~
+
 #
 # AS OF 2017-01-18 (or earlier):
 #
@@ -27,7 +75,7 @@ sudo apt-get -y install libompl-dev ompl-demos
 # Alternately-alternately, if you want the ROS MoveIt! version and have already installed a version of ROS...
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-sudo apt-get update
-sudo apt-get -y install ros-`rosversion -d`-ompl
+sudo apt update
+sudo apt -y install ros-`rosversion -d`-ompl
 
-# --EOF--
+echo "End of install_noomplapp_nopythonbindings.sh script!"

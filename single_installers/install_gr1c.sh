@@ -45,6 +45,7 @@ fi
 #
 # check for installation
 #
+
 GR1C_FOUND=`gr1c -V | grep -m 1 "gr1c 0.10.1" | wc -l`
 if [ $GR1C_FOUND -eq 1 ]
 then
@@ -63,8 +64,7 @@ fi
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 # start in the /root directory
 cd ~

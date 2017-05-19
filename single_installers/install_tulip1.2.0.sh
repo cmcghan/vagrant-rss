@@ -25,18 +25,11 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # INPUT ARGUMENT PARSING:
 #
 
-#
 # get -f (force) if given
-#
-
-# if we get an input parameter (username) then use it, else use default 'vagrant'
 if [ $# -eq 1 ] && [ "$1" == "-f" ]
 then
     echo "-f (force) commandline argument given. Forcing install of all compiled-from-source components."
@@ -72,8 +65,7 @@ fi
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 # start in the /root directory
 cd ~

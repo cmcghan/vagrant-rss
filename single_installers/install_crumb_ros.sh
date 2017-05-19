@@ -18,16 +18,15 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
 source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
 # when source'd, sets these vars at this level: ROSVERSION SCRIPTUSER WORKSPACEDIR FORCE
 
-
+#
+# check for installation
+#
 
 # if ROS isn't already installed:
 if [ ! -f /opt/ros/$ROSVERSION/setup.bash ]; then # install the appropriate version of ROS
@@ -54,12 +53,12 @@ sudo apt-get -y install ros-$ROSVERSION-control-toolbox
 # crumb_gazebo/src/led.cpp requires kobuki_msgs/Led.h
 sudo apt-get -y install ros-$ROSVERSION-kobuki-msgs
 
-if [ "$ROSVERSION" -eq "indigo" ]; then
+if [ "$ROSVERSION" == "indigo" ]; then
     echo "No changes made in indigo before compile..."
-elif [ "$ROSVERSION" -eq "jade" ]; then
+elif [ "$ROSVERSION" == "jade" ]; then
     echo "No changes made in jade before compile..."
 # if we're using gazebo7 (with ROS kinetic) then we will need to make some fixes!
-elif [ $ROSVERSION == "kinetic" ]; then
+elif [ "$ROSVERSION" == "kinetic" ]; then
     # now, fixing errors that catkin_make would otherwise give...
 
     # crumb_listener_gazebo, ROS/crumb/crumb_listener/CMakeFiles/crumb_listener_gazebo.dir/src/crumb_listener_gazebo.cpp.o
@@ -169,6 +168,6 @@ elif [ $ROSVERSION == "kinetic" ]; then
 fi
 
 #now, catkin_make this bad boy! :)
-su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; /opt/ros/$ROSVERSION/bin/catkin_make;"
+su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; source /opt/ros/$ROSVERSION/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
 
 echo "End of install_crumb_ros.sh script!"

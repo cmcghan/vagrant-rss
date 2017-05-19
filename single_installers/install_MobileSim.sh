@@ -43,8 +43,7 @@ fi
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
@@ -53,18 +52,34 @@ if [ $MOBILESIM_FOUND -eq 0 ]
 then
     mkdir -p ~/initdeps
     cd ~/initdeps
+    
     # If you are running Ubuntu 14.04 64-bit, install these packages first to resolve dependencies, just in case (these are useful for Matlab fonts and such, too)
-    sudo apt-get -y install lib32z1 lib32ncurses5 lib32bz2-1.0 xfonts-100dpi
-    sudo apt-get -y install wget
-    if [ "$FORCE" == "-f" ] || [ ! -f mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb ]
-    then
-        wget http://robots.mobilerobots.com/MobileSim/download/current/mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
+    if [ $UCODENAME == "trusty" ]; then
+        sudo apt -y install lib32z1 lib32ncurses5 lib32bz2-1.0 xfonts-100dpi
+    elif [ $UCODENAME == "xenial" ]; then
+        # requires GTK 2.6+ and libstdc++ 2.2 for libc6 ??
+        sudo apt -y install lib32z1 lib32ncurses5 lib32stdc++6 xfonts-100dpi # ia32-libs is replaced by the first two
+        sudo dpkg --add-architecture i386
+        sudo apt -y update
+        sudo apt -y install libbz2-1.0:i386
     fi
-    if [ "$FORCE" == "-f" ] || [ $MOBILESIM_FOUND -eq 0 ]
-    then
-        sudo dpkg -i mobilesim_0.7.3+ubuntu12+gcc4.6_amd64.deb
+    
+    sudo apt-get -y install wget
+    ARCH_NUM=`uname -m` # gives x86_64 vs. i386
+    if [ $ARCH_NUM == "x86_64" ]; then
+        ARCH_NUM="amd64"
+    fi
+    if [ "$FORCE" == "-f" ] || [ ! -f mobilesim_0.7.3+ubuntu12+gcc4.6_$ARCH_NUM.deb ]; then
+        wget http://robots.mobilerobots.com/MobileSim/download/archives/mobilesim_0.7.3+ubuntu12+gcc4.6_$ARCH_NUM.deb
+    fi
+    if [ "$FORCE" == "-f" ] || [ $MOBILESIM_FOUND -eq 0 ]; then
+        sudo dpkg -i mobilesim_0.7.3+ubuntu12+gcc4.6_$ARCH_NUM.deb
     fi
 fi
 
+# test a single robot via:
+#MobileSim -m /usr/local/MobileSim/columbia.map -r p3dx
+# test multiple robots via:
+#MobileSim -m /usr/local/MobileSim/columbia.map -r p3dx:robot1 -r p3dx:robot2 -r amigo:robot3
 
 echo "End of install_MobileSim.sh script!"

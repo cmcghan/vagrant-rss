@@ -18,9 +18,6 @@ RELATIVE_PATH="`dirname \"$0\"`"
 ABSOLUTE_PATH="`( cd \"$RELATIVE_PATH\" && pwd )`"
 echo "PATH of current script ($0) is: $ABSOLUTE_PATH"
 
-# find O/S codename (set to UCODENAME)
-source $ABSOLUTE_PATH/get_os_codename.sh
-
 #
 # parse input vars (set to appropriate vars or default vars)
 #
@@ -33,8 +30,7 @@ source $ABSOLUTE_PATH/get_rv_su_wd_f.sh "$@"
 #
 
 # update all packages, because "gah!" otherwise, especially for 'rosdep' stuff later
-sudo apt-get -y update
-sudo apt-get -y upgrade
+$ABSOLUTE_PATH/apt_upd_sys.sh
 
 sudo apt-get -y install wget curl # for wget and possible curl use below
 
@@ -52,16 +48,16 @@ sudo apt-get -y install wget curl # for wget and possible curl use below
 #    sudo -u $SCRIPTUSER git clone https://github.com/SD-Robot-Vision/PioneerModel.git
 #fi
 
-if [ "$ROSVERSION" -eq "indigo" ]; then
+if [ "$ROSVERSION" == "indigo" ]; then
     
-elif [ "$ROSVERSION" -eq "jade" ]; then
+elif [ "$ROSVERSION" == "jade" ]; then
     
-elif [ "$ROSVERSION" -eq "kinetic" ]; then
+elif [ "$ROSVERSION" == "kinetic" ]; then
     
 fi
 
 #now, catkin_make this bad boy! :)
-su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; /opt/ros/$ROSVERSION/bin/catkin_make;"
+su - $SCRIPTUSER -c "source /home/$SCRIPTUSER/.bashrc; cd $WORKSPACEDIR; source /opt/ros/$ROSVERSION/setup.bash; /opt/ros/$ROSVERSION/bin/catkin_make;"
 
 
 echo "End of install_usarsim_ros.sh script!"

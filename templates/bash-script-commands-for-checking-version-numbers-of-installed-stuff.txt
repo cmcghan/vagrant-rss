@@ -11,6 +11,18 @@
 #
 
 #
+# methods to check for existence of system-installed .deb package (installed via apt, apt-get, or dpkg):
+#
+
+#ROSVERSION_INSTALLED=`dpkg -s ros-$ROSVERSION-desktop-full | grep -m 1 "Status: install ok installed" | wc -l`
+# dpkg -s ros-$ROSVERSION-desktop-full should check pkg status and return a set of strings with '...Status: install ok installed...' or '...is not installed...'
+# grep should find a match and repeat it (the entire line)
+# and wc -l should give 1 if installed/good-status (and 0 if "is not installed" was found)
+#if [ $ROSVERSION_INSTALLED -eq 1 ]; then
+#    echo "ros-$ROSVERSION-desktop-full is already installed!"
+#fi
+
+#
 # methods to check for libraries of a specific name and with known directory / install location:
 #
 #if [ ! -f /usr/local/lib/python2.7/dist-packages/ompl/geometric/_geometric.so ] || [ ! -f /usr/local/lib/python2.7/dist-packages/ompl/app/_app.so ]
