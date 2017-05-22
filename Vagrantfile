@@ -1,5 +1,5 @@
 # Emacs, this is in -*- ruby -*-
-# Copyright by California Institute of Technology
+# Copyright by California Institute of Technology, University of Cincinnati
 # All rights reserved. See LICENSE file at:
 # https://github.com/cmcghan/vagrant-rss
 #
@@ -21,19 +21,21 @@
 # in the VM.
 #
 # The intended usage is:
-#   git clone https://github.com/cmcghan/vagrant-rss.git
+#   git clone -b ubuntu-16.04-xenial https://github.com/cmcghan/vagrant-rss.git
 #   cd vagrant-rss
-#   vagrant box add shadowrobot/ros-indigo-desktop-trusty64
-#   vagrant up
+#   cp Vagrantfile.kinetic Vagrantfile
+#   vagrant box add ubuntu/xenial64
+#   vagrant up --provider virtualbox
 #   vagrant ssh
 #   cd ~/catkin_ws/src/rss_work
 #
 # We recommend you change your password after the first login (type 'passwd').
 # For X-Window forwarding through ssh in MacOSX or Linux, use 'vagrant ssh -- -X' instead
-# and uncomment the "config.ssh.forward_x11 = true" at line 80 below.
+# and uncomment the "config.ssh.forward_x11 = true" at line 87 below.
 #
 # When you are done, close ssh and type 'vagrant suspend' or 'vagrant halt' in the shell.
-# --> Note that 'vagrant destroy' is NOT recommended, since the OMPL compilation can take
+# --> Note that 'vagrant destroy' is NOT recommended, since the initial installation of
+# the X-Windows GUI(+Unity) and ROS jade can take an hour, and OMPL compilation can take
 # around an hour or longer to finish the provisioning process on the initial 'vagrant up'!!
 #
 # Note that if you are using Windows, you will need to run these commands from either
@@ -45,22 +47,22 @@
 # * uncomment 'vb.gui = true' below so that VirtualBox will show the usual interface
 # =OR=
 # * install PuTTY+Xming for ssh access with X-Windows support (127.0.0.1, port 2222)
-#   and uncomment the "config.ssh.forward_x11 = true" at line 80 below.
+#   and uncomment the "config.ssh.forward_x11 = true" at line 87 below.
 #
 # ----REFERENCES ----
 #
-# This file was modified from tulip-control'S Vagrantfile:
+# This file was modified from tulip-control's Vagrantfile:
 # https://github.com/tulip-control/tulip-control/blob/master/contrib/Vagrantfile
 #
 # Base box used:
-# https://atlas.hashicorp.com/shadowrobot/boxes/ros-indigo-desktop-trusty64
+# https://atlas.hashicorp.com/ubuntu/boxes/xenial64
 #
 # We also used a modified version of the 'increase swap memory' example from:
 # https://jeqo.github.io/blog/devops/vagrant-quickstart/
 #
 # Other references:
 # https://docs.vagrantup.com/v2/getting-started/boxes.html
-# https://atlas.hashicorp.com/ubuntu/boxes/trusty64
+# https://atlas.hashicorp.com/ubuntu/boxes/xenial64
 # https://github.com/tulip-control/tulip-control/blob/master/contrib/nonroot-vagrant-instructions.md
 # http://www.electrictoolbox.com/PuTTY-rsa-dsa-keys/
 # http://unix.stackexchange.com/questions/32907/what-characters-do-i-need-to-escape-when-using-sed-in-a-sh-script
@@ -72,10 +74,9 @@ Vagrant.configure(2) do |config|
   #
   
   # default box:
-  config.vm.box = "shadowrobot/ros-indigo-desktop-trusty64"
-  # this is 2048MB memory and 64MB video RAM; 40GB drive; 2 processors; CD/DVD drive
-  # login: /home/ros --> ros(/ros)
-  # login: /home/vagrant --> vagrant
+  config.vm.box = "ubuntu/xenial64"
+  # this is 1024MB memory and 16MB video RAM; 10GB drive; 2 processors; no CD/DVD drive
+  # login: /home/ubuntu --> ubuntu(/)
   # You can also use the RSA private key under:
   #   .vagrant/machines/default/virtualbox/private_key
   # On Windows, load this into PuTTYGen to create a 'private_key.ppk' that PuTTY can use;
@@ -87,7 +88,7 @@ Vagrant.configure(2) do |config|
   # Windows you can still use PuTTY+Xming to see GUI windows pop-up
   
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--name"  , "rss_git_indigo_development_machine"]
+    vb.customize ["modifyvm", :id, "--name"  , "rss_git_kinetic_development_machine"]
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus"  , 2]
     vb.customize ["modifyvm", :id, "--chipset", "ich9"]
@@ -95,9 +96,9 @@ Vagrant.configure(2) do |config|
     vb.gui = true
   end
   #
-  # The ros-indigo-desktop-trusty64 box already has a username 'ros' with default password;
-  # you can avoid creating default username 'vagrant' by specifying 'ros' as the default:
-  #config.ssh.username = "ros" # default password same as username
+  # The ubuntu/xenial64 box already has a disabled acct. 'ubuntu' with no default password.
+  # Create password and enable sudo in GUI by typing "sudo passwd ubuntu" in the terminal
+  # after having performed 'vagrant ssh' or similar using the private key.
   
   # by default, the Vagrantfile directory mounts to the shared folder /vagrant
   #config.vm.synced_folder ".", "/vagrant"
@@ -134,10 +135,12 @@ Vagrant.configure(2) do |config|
     fi
     
     #
-    # Note: Ubuntu X-Windows Desktop and ROS indigo are pre-installed
-    # on the "shadowrobot/ros-indigo-desktop-trusty64" base box
+    # install Ubuntu X-Windows Desktop (for "ubuntu/xenial64" box)
     #
-
-    /vagrant/install_all_rss_deps.sh indigo vagrant
+    sudo apt-get -y update
+    sudo apt-get -y install ubuntu-desktop
+    # note that this increases the disk space necessary for the vbox by several GB
+    
+    /vagrant/install_all_rss_deps.sh kinetic vagrant
   SHELL
 end
