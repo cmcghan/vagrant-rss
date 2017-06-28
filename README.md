@@ -1,3 +1,5 @@
+# NOTE: cmcghan/vagrant-rss IS CURRENTLY DEPRECATED AND THE NEWEST VERSION RECEIVING UPDATES IS THE FORK LOCATED AT: https://github.com/AS4SR/vagrant-rss
+
 # vagrant-rss
 Vagrantfile(s) for setting up a Virtual Machine (VM) for the Caltech RSE implementation and beyond (includes installation scripts)
 
